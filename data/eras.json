@@ -1,0 +1,30 @@
+[
+  {
+    "name": "golden_age",
+    "display_name": "Golden Age",
+    "start_year": 1938,
+    "end_year": 1956,
+    "description": "The dawn of superhero comics"
+  },
+  {
+    "name": "silver_age",
+    "display_name": "Silver Age",
+    "start_year": 1956,
+    "end_year": 1970,
+    "description": "Revival and modernization of superheroes"
+  },
+  {
+    "name": "bronze_age",
+    "display_name": "Bronze Age",
+    "start_year": 1970,
+    "end_year": 1985,
+    "description": "Darker stories and social relevance"
+  },
+  {
+    "name": "modern_age",
+    "display_name": "Modern Age",
+    "start_year": 1985,
+    "end_year": null,
+    "description": "Contemporary comic storytelling"
+  }
+]

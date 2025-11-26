@@ -1,0 +1,45 @@
+{% if comics_count == 0 %}
+<div class="layout layout--center">
+  <div class="title text--center">No Comics Found</div>
+  <div class="description text--center">
+    No comic covers found with your current filters. Try adjusting your filters or check your API key.
+  </div>
+</div>
+{% else %}
+<div class="layout">
+  {% assign random_comic = comics | first %}
+  {% assign background_url = random_comic.image.screen_url | default: random_comic.image.medium_url | default: "" %}
+  
+  {% comment %} Background Image {% endcomment %}
+  {% if background_url != "" %}
+  <img src="{{ background_url }}" class="image-dither" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0.3; filter: blur(8px) brightness(1.3); z-index: 0;" />
+  {% endif %}
+
+  {% comment %} Grid Mode - Multiple Covers {% endcomment %}
+  <div class="columns" style="position: relative; z-index: 1;">
+    {% for comic in comics limit: 1 %}
+    {% assign image_url = comic.image.small_url | default: comic.image.original_url | default: "" %}
+    {% if image_url != "" %}
+    <div class="column" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+        <img src="{{ image_url }}" class="image image-dither image--contain" style="max-width:70%; height: auto; border: 3px solid #000;" />
+        <div class="label text--xs label--inverted" style="display: block; width: 70%">{% if comic.issue_number %}#{{ comic.issue_number }}  {% endif %}{% if comic.name %}{{ comic.name | upcase }}{% endif %}</div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>  <!-- Title Bar -->
+  {% if display_mode == "full_details" and comics_count == 1 %}
+<div class="title_bar">
+  {% assign comic = comics[0] %}
+  <span class="label label--inverted">
+    {{ comic.volume.name }}
+  </span>
+  <span class="title">
+    {% if comic.issue_number != "" %}#{{ comic.issue_number }}{% endif %}
+    {{ comic.name | truncate: 40 }}
+  </span>
+</div>
+  {% endif %}
+{% endif %}

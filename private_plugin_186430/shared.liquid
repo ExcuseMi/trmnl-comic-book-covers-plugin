@@ -1,0 +1,23 @@
+{% liquid
+# Get plugin settings
+assign display_mode = trmnl.plugin_settings.custom_fields_values.display_style | default: "cover_title"
+assign show_qr_code = trmnl.plugin_settings.custom_fields_values.show_qr_code | default: "hide"
+assign layout_orientation = trmnl.plugin_settings.custom_fields_values.layout_orientation | default: "landscape"
+
+# Load comic data
+assign comics = "" | split: "" 
+
+# Loop over IDX_ variables until nothing is found
+for i in (1..4)
+  assign idx_name = "IDX_" | append: i
+  assign idx_data = [idx_name]
+  
+  if idx_data and idx_data.results
+    assign comics = comics | concat: idx_data.results
+  endif
+endfor
+
+# Sort comics by cover_date
+assign comics = comics | limit:3 | sort: "cover_date"
+assign comics_count = comics.size
+%}

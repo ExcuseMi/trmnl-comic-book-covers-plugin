@@ -1,0 +1,302 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'yes'
+static_data: ''
+polling_verb: get
+polling_url: "https://usetrmnl.com/custom_plugin_example_data.json\r\n{% liquid\r\n  assign api_base = \"https://comicvine.gamespot.com/api/issues\"\r\n  assign api_key = trmnl.plugin_settings.custom_fields_values.comic_vine_api_key\r\n  assign field_list = \"name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url\"\r\n  assign selected_series = trmnl.plugin_settings.custom_fields_values.selected_series | default: \"\"\r\n  assign timestamp = trmnl.system.timestamp_utc\r\n%}\r\n\r\n{% if selected_series != \"\" %}\r\n  {% assign cleaned = selected_series | replace: '[', '' | replace: ']', '' | replace: '\"', '' | replace: ' ', '' %}\r\n  {% assign slist = cleaned | split: \",\" %}\r\n  \r\n  {% if slist.size == 1 %}\r\n    {% comment %} Only 1 series selected - fetch 3 issues in one call {% endcomment %}\r\n    {% liquid\r\n      assign limit = 3\r\n      assign sdata = slist[0] | split: \"|\"\r\n      assign sid = sdata[0]\r\n      assign rand_offset = timestamp | modulo: 100\r\n      \r\n      assign query = \"api_key=\" | append: api_key\r\n      assign query = query | append: \"&format=json\"\r\n      assign query = query | append: \"&field_list=\" | append: field_list\r\n      assign query = query | append: \"&limit=\" | append: limit\r\n      assign query = query | append: \"&filter=volume:\" | append: sid\r\n      assign query = query | append: \"&offset=\" | append: rand_offset\r\n      assign query = query | append: \"&sort=cover_date\"\r\n      assign api_url = api_base | append: \"?\" | append: query \r\n    %}\r\n    {{api_url}}\r\n  {% else %}\r\n    {% comment %} Multiple series - fetch 1 from each {% endcomment %}\r\n    {% for i in (0..2) %}\r\n      {% liquid\r\n        assign limit = 1\r\n        assign query = \"api_key=\" | append: api_key\r\n        assign query = query | append: \"&format=json\"\r\n        assign query = query | append: \"&field_list=\" | append: field_list\r\n        assign query = query | append: \"&limit=\" | append: limit\r\n        \r\n        if slist.size >= 3\r\n          assign idx = i | modulo: slist.size\r\n        else\r\n          assign idx = timestamp | plus: i | modulo: slist.size\r\n        endif\r\n        \r\n        assign sdata = slist[idx] | split: \"|\"\r\n        assign sid = sdata[0]\r\n        assign rand_offset = timestamp | plus: i | modulo: 100\r\n        assign query = query | append: \"&filter=volume:\" | append: sid\r\n        assign query = query | append: \"&offset=\" | append: rand_offset\r\n        assign query = query | append: \"&sort=cover_date\"\r\n        assign api_url = api_base | append: \"?\" | append: query \r\n      %}\r\n      {{api_url}}\r\n    {% endfor %}\r\n  {% endif %}\r\n{% else %}\r\n  {% comment %} No series selected - fetch random issues {% endcomment %}\r\n  {% for i in (0..2) %}\r\n    {% liquid\r\n      assign limit = 1\r\n      assign query = \"api_key=\" | append: api_key\r\n      assign query = query | append: \"&format=json\"\r\n      assign query = query | append: \"&field_list=\" | append: field_list\r\n      assign query = query | append: \"&limit=\" | append: limit\r\n      assign rand_offset = timestamp | plus: i | modulo: 1000\r\n      assign query = query | append: \"&offset=\" | append: rand_offset\r\n      assign query = query | append: \"&sort=cover_date\"\r\n      assign api_url = api_base | append: \"?\" | append: query \r\n    %}\r\n    {{api_url}}\r\n  {% endfor %}\r\n{% endif %}"
+polling_headers: ''
+polling_body: ''
+id: 186430
+custom_fields:
+- keyname: about
+  name: About This Plugin
+  field_type: author_bio
+  description: Display random comic book covers on your TRMNL e-ink device using the Comic Vine API.<br /><br /><strong>Series-Based Approach:</strong><br />• Select from 250 most popular comic series<br /><strong>Setup:</strong><br />1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />2. Add your API key to the field below<br />3. Select your favorite series (required)<br /><br />
+  learn_more_url: https://comicvine.gamespot.com/api/
+  github_url: https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin
+  category: comics,art
+- keyname: comic_vine_api_key
+  field_type: password
+  name: Comic Vine API Key
+  description: Your Comic Vine API key. Get a free key at <a href="https://comicvine.gamespot.com/api/" target="_blank">comicvine.gamespot.com/api/</a>
+  placeholder: Enter your API key
+  optional: false
+- keyname: selected_series
+  field_type: select
+  name: Comic Series
+  optional: false
+  description: Select one or more comic series to display covers from. Shows issue counts for reference. This field is required.
+  multiple: true
+  options:
+  - 100 Bullets (1999) - 100 issues: 6306|100
+  - 87:an Axelsson (1994) - 121 issues: 9296|121
+  - 91:an (1956) - 1453 issues: 7654|1453
+  - A-1 Comics (1944) - 139 issues: 1032|139
+  - Action Comics (1938) - 864 issues: 18005|864
+  - Adventure Comics (1938) - 472 issues: 3105|472
+  - Adventures of Superman (1987) - 228 issues: 3778|228
+  - Adventures of the Big Boy (1956) - 457 issues: 10861|457
+  - 'AG: Super Erotic Manga Anthology (2002) - 110 issues': 3122|110
+  - Agent X9 (1971) - 669 issues: 7664|669
+  - Alan Ford (1969) - 642 issues: 2456|642
+  - All-American Men of War (1952) - 116 issues: 1553|116
+  - Almanacco Topolino (1957) - 336 issues: 7007|336
+  - Alpha Flight (1983) - 130 issues: 3217|130
+  - Archie (1960) - 553 issues: 9628|553
+  - Archie Comics (1942) - 113 issues: 1898|113
+  - Archie Digest Magazine (1973) - 267 issues: 11531|267
+  - Archie Giant Series Magazine (1954) - 332 issues: 11430|332
+  - Archie's Double Digest Magazine (1984) - 363 issues: 18796|363
+  - Bamse (1973) - 496 issues: 9554|496
+  - Bart Simpson (2000) - 100 issues: 18527|100
+  - Batman (1940) - 716 issues: 796|716
+  - 'Batman: Legends of the Dark Knight (1992) - 179 issues': 4720|179
+  - 'Batman: Shadow of the Bat (1992) - 96 issues': 4724|96
+  - Beep Beep the Road Runner (1966) - 105 issues: 6731|105
+  - Bessatsu Big Comic (1971) - 236 issues: 1146|236
+  - Betty (1992) - 195 issues: 11037|195
+  - Betty and Me (1965) - 200 issues: 11428|200
+  - Betty and Veronica (1987) - 278 issues: 11038|278
+  - Billy the Kid (1957) - 145 issues: 1810|145
+  - Birds of Prey (1999) - 127 issues: 6498|127
+  - Blackhawk (1944) - 265 issues: 1819|265
+  - Blade of the Immortal (1996) - 131 issues: 9069|131
+  - Blue (1991) - 206 issues: 9638|206
+  - Boris Karloff Tales of Mystery (1963) - 95 issues: 2087|95
+  - Boy Comics (1942) - 117 issues: 942|117
+  - Bugs Bunny (1962) - 135 issues: 11508|135
+  - Cable (1993) - 108 issues: 4993|108
+  - Capitan America (1973) - 128 issues: 2656|128
+  - Captain America (1968) - 355 issues: 2400|355
+  - Captain Marvel Adventures (1941) - 147 issues: 898|147
+  - Captain Marvel, Jr. (1942) - 118 issues: 953|118
+  - Cartoons Magazine (1912) - 98 issues: 10762|98
+  - Catwoman (1993) - 96 issues: 4955|96
+  - Cerebus (1977) - 298 issues: 2930|298
+  - Chic Young's Dagwood Comics (1950) - 140 issues: 10804|140
+  - Classics Illustrated (1941) - 170 issues: 914|170
+  - Collana Araldo - Il Comandante Mark (1966) - 281 issues: 2482|281
+  - Comics on Parade (1938) - 104 issues: 9490|104
+  - Comix Kiss Comix (1991) - 239 issues: 8475|239
+  - Conan Saga (1987) - 97 issues: 3837|97
+  - Conan the Barbarian (1970) - 275 issues: 2471|275
+  - Creepy (1964) - 146 issues: 2194|146
+  - Crime Does Not Pay (1942) - 126 issues: 943|126
+  - Daffy Duck (1959) - 126 issues: 9559|126
+  - Daredevil (1964) - 381 issues: 2190|381
+  - Daredevil (1998) - 134 issues: 6209|134
+  - Daredevil Comics (1941) - 134 issues: 886|134
+  - Dark Horse Presents (1986) - 162 issues: 3739|162
+  - DC Comics Presents (1978) - 97 issues: 2943|97
+  - Detective Comics (1937) - 883 issues: 18058|883
+  - Devil Kids Starring Hot Stuff (1962) - 107 issues: 2123|107
+  - Dick Tracy (1950) - 121 issues: 10715|121
+  - Disney Adventures (1990) - 157 issues: 4511|157
+  - Donald Duck (1952) - 342 issues: 2090|342
+  - Dylan Dog (1986) - 462 issues: 3659|462
+  - Edgar Rice Burroughs' Tarzan (1949) - 128 issues: 1176|128
+  - Eerie (1966) - 139 issues: 2300|139
+  - Elvira Mistress of the Dark (1993) - 166 issues: 5199|166
+  - Epix (1984) - 98 issues: 7510|98
+  - Euracomix (1988) - 255 issues: 7022|255
+  - Excalibur (1988) - 126 issues: 4052|126
+  - Exiles (2001) - 100 issues: 6983|100
+  - Fables (2002) - 161 issues: 9723|161
+  - Falling in Love (1955) - 143 issues: 1684|143
+  - Famous Monsters of Filmland (1958) - 231 issues: 1992|231
+  - Fantastic Four (1961) - 416 issues: 2045|416
+  - Fantastic Four (1998) - 173 issues: 6211|173
+  - Fantomen (1950) - 1765 issues: 7385|1765
+  - FemForce (1985) - 204 issues: 3552|204
+  - Forbidden Worlds (1951) - 145 issues: 1446|145
+  - Four Color (1942) - 1321 issues: 927|1321
+  - G.I. Combat (1952) - 288 issues: 1820|288
+  - 'G.I. Joe: A Real American Hero (1982) - 155 issues': 3138|155
+  - Gene Autry Comics (1946) - 101 issues: 11589|101
+  - Ghostly Tales (1966) - 115 issues: 2269|115
+  - Ghosts (1971) - 112 issues: 2503|112
+  - Gigant (1969) - 102 issues: 9162|102
+  - Giggle Comics (1943) - 99 issues: 11124|99
+  - Gold Digger (1999) - 251 issues: 18720|251
+  - Green Arrow (1988) - 139 issues: 4003|139
+  - Green Lantern (1960) - 205 issues: 2839|205
+  - Green Lantern (1990) - 183 issues: 4363|183
+  - Gustaf (1984) - 145 issues: 7670|145
+  - Ha Ha Comics (1943) - 99 issues: 11125|99
+  - Harvey Hits Magazine (1957) - 122 issues: 1835|122
+  - Heart Throbs (1949) - 146 issues: 1821|146
+  - Helan och Halvan (1963) - 191 issues: 7110|191
+  - Hellblazer (1988) - 300 issues: 4008|300
+  - Herman Hedning (1998) - 195 issues: 8986|195
+  - Hot Stuff The Little Devil (1957) - 177 issues: 2124|177
+  - I Fantastici Quattro (1971) - 259 issues: 2527|259
+  - Il Mitico Thor (1971) - 102 issues: 2528|102
+  - Incredible Hulk (2000) - 101 issues: 6558|101
+  - Invincible (2003) - 145 issues: 17993|145
+  - Iron Man (1968) - 336 issues: 2407|336
+  - JLA (1997) - 126 issues: 5957|126
+  - Journey into Mystery (1952) - 125 issues: 1497|125
+  - Jughead (1965) - 226 issues: 11649|226
+  - Jughead Jones Comics Digest (1977) - 100 issues: 11766|100
+  - Jumbo Comics (1938) - 167 issues: 769|167
+  - Justice League of America (1960) - 261 issues: 2014|261
+  - Kalle Anka & C:o (1948) - 619 issues: 10107|619
+  - Kalle Ankas Pocket (1968) - 571 issues: 9625|571
+  - Kid Colt Outlaw (1949) - 225 issues: 1199|225
+  - Knasen (1970) - 1192 issues: 7397|1192
+  - Knights of the Dinner Table (1994) - 310 issues: 9179|310
+  - Kriminal (1964) - 419 issues: 2216|419
+  - Lanciostory (1975) - 2518 issues: 4443|2518
+  - Larsons gale verden (1992) - 211 issues: 11325|211
+  - Laugh (1959) - 301 issues: 1101|301
+  - Legion of Super-Heroes (1989) - 127 issues: 4201|127
+  - Life with Archie (1958) - 286 issues: 11009|286
+  - Little Dot (1953) - 164 issues: 11404|164
+  - Little Lotta (1955) - 120 issues: 11408|120
+  - Looney Tunes (1994) - 281 issues: 18839|281
+  - Looney Tunes and Merrie Melodies Comics (1941) - 107 issues: 6574|107
+  - Love Romances (1949) - 101 issues: 1276|101
+  - MAD (1952) - 550 issues: 9318|550
+  - MAD Special (1970) - 141 issues: 9314|141
+  - Magic Comics (1939) - 123 issues: 776|123
+  - Magnum Comics (1988) - 109 issues: 9565|109
+  - Martin Mystère (1982) - 424 issues: 3158|424
+  - Marvel Comics Presents (1988) - 175 issues: 4058|175
+  - Marvel Tales (1966) - 120 issues: 2293|120
+  - Marvel Team-Up (1972) - 150 issues: 2576|150
+  - Marvel Two-in-One (1974) - 100 issues: 2696|100
+  - Master Comics (1940) - 133 issues: 839|133
+  - Master of Kung Fu (1974) - 109 issues: 2697|109
+  - Men of Mystery Comics (1999) - 99 issues: 12091|99
+  - Mickey Mouse (1952) - 282 issues: 1477|282
+  - Musse Pigg & Co (1980) - 206 issues: 8274|206
+  - Mystery in Space (1951) - 117 issues: 1406|117
+  - Nemi (2002) - 114 issues: 9428|114
+  - Nightwing (1996) - 155 issues: 5755|155
+  - Our Army at War (1952) - 301 issues: 1472|301
+  - Our Fighting Forces (1954) - 181 issues: 1618|181
+  - Patsy and Hedy (1952) - 110 issues: 8517|110
+  - Patsy Walker (1945) - 124 issues: 1062|124
+  - Pondus (2000) - 135 issues: 7504|135
+  - Popeye (1948) - 168 issues: 1174|168
+  - Porky Pig (1965) - 108 issues: 11644|108
+  - Real Screen Comics (1945) - 127 issues: 1043|127
+  - Reggie and Me (1966) - 108 issues: 11653|108
+  - Richie Rich (1960) - 254 issues: 11660|254
+  - Robin (1993) - 185 issues: 4975|185
+  - Sad Sack and the Sarge (1957) - 155 issues: 11455|155
+  - Sad Sack Comics (1949) - 292 issues: 11456|292
+  - Savage Dragon (1993) - 280 issues: 5170|280
+  - Scooby-Doo! (1997) - 159 issues: 18731|159
+  - Secret Hearts (1949) - 153 issues: 1244|153
+  - Sensation Comics (1942) - 109 issues: 18678|109
+  - Sergio Aragonés Groo the Wanderer (1985) - 120 issues: 3508|120
+  - Serie-Magasinet (1948) - 1387 issues: 8987|1387
+  - Sgt. Fury (1963) - 120 issues: 6724|120
+  - Sgt. Rock (1977) - 121 issues: 2890|121
+  - Showcase (1956) - 104 issues: 1770|104
+  - Silver Surfer (1987) - 148 issues: 3857|148
+  - Simpsons Comics (1993) - 245 issues: 5197|245
+  - Skorpio (1977) - 2163 issues: 6592|2163
+  - Sonic the Hedgehog (1993) - 291 issues: 11074|291
+  - Sparkler Comics (1941) - 120 issues: 874|120
+  - Spawn (1992) - 370 issues: 4937|370
+  - Spider-Girl (1998) - 102 issues: 6218|102
+  - Spider-Man (1990) - 100 issues: 4421|100
+  - Star Spangled War Stories (1952) - 202 issues: 1543|202
+  - Star Wars (1977) - 108 issues: 2914|108
+  - Strange Adventures (1950) - 244 issues: 1328|244
+  - Strange Tales (1951) - 168 issues: 18066|168
+  - Sugar and Spike (1956) - 98 issues: 1771|98
+  - Super Eroica (1965) - 265 issues: 2261|265
+  - Superboy (1994) - 102 issues: 5261|102
+  - Superman (1939) - 488 issues: 773|488
+  - Superman (1987) - 228 issues: 3816|228
+  - Superman Supacomic (1959) - 196 issues: 6554|196
+  - 'Superman: The Man of Steel (1991) - 136 issues': 4571|136
+  - Svenska MAD (1960) - 298 issues: 7374|298
+  - Swamp Thing (1986) - 126 issues: 3465|126
+  - Tales of Suspense (1959) - 99 issues: 2007|99
+  - Tales of the Unexpected (1956) - 104 issues: 1772|104
+  - Tales to Astonish (1959) - 101 issues: 2008|101
+  - Teen Confessions (1959) - 97 issues: 1994|97
+  - Teen Titans (2003) - 101 issues: 10414|101
+  - The Adventures of Bob Hope (1950) - 109 issues: 1321|109
+  - The Adventures of Little Archie (1959) - 168 issues: 11901|168
+  - The Amazing Spider-Man (1963) - 651 issues: 2127|651
+  - The Avengers (1963) - 403 issues: 2128|403
+  - The Brave and the Bold (1955) - 200 issues: 1683|200
+  - The Defenders (1972) - 152 issues: 2569|152
+  - The Flash (1987) - 250 issues: 3790|250
+  - The Flash (1959) - 246 issues: 1995|246
+  - The Fox and the Crow (1952) - 108 issues: 1471|108
+  - The Friendly Ghost Casper (1958) - 260 issues: 10735|260
+  - The Incredible Hulk (1968) - 374 issues: 2406|374
+  - The Lone Ranger (1948) - 145 issues: 1172|145
+  - The New Mutants (1983) - 100 issues: 3234|100
+  - The Punisher (1987) - 104 issues: 3855|104
+  - The Rawhide Kid (1960) - 135 issues: 2023|135
+  - The Savage Sword of Conan (1974) - 235 issues: 2701|235
+  - The Spectacular Spider-Man (1976) - 265 issues: 2870|265
+  - The Uncanny X-Men (1981) - 405 issues: 3092|405
+  - The Unexpected (1968) - 118 issues: 2397|118
+  - The Walking Dead (2003) - 193 issues: 18166|193
+  - The X-Men (1963) - 141 issues: 2133|141
+  - Thor (1966) - 293 issues: 2294|293
+  - Tip Top Comic Monthly (1965) - 127 issues: 2136|127
+  - Tip Top Comics (1936) - 225 issues: 1831|225
+  - Tom & Jerry Comics (1949) - 153 issues: 1247|153
+  - Tom and Jerry (1962) - 132 issues: 11083|132
+  - Tomahawk (1950) - 140 issues: 1329|140
+  - Tommy og Tigern (1989) - 241 issues: 11140|241
+  - Topolino (1949) - 3641 issues: 1313|3641
+  - Turok, Son of Stone (1956) - 128 issues: 2101|128
+  - Tweety and Sylvester (1963) - 121 issues: 6807|121
+  - Two-Gun Kid (1948) - 136 issues: 1583|136
+  - Ultimate Spider-Man (2000) - 134 issues: 7257|134
+  - Ultimate X-Men (2001) - 101 issues: 7258|101
+  - Uncle Scrooge (1953) - 401 issues: 2103|401
+  - Usagi Yojimbo (1996) - 165 issues: 5845|165
+  - Vampirella (1969) - 113 issues: 2449|113
+  - Veronica (1989) - 210 issues: 12013|210
+  - Walter Lantz New Funnies (1946) - 180 issues: 1098|180
+  - Walter Lantz Woody Woodpecker (1952) - 185 issues: 11012|185
+  - Warlord (1976) - 133 issues: 2850|133
+  - Web of Spider-Man (1985) - 131 issues: 3519|131
+  - Weird War Tales (1971) - 124 issues: 2507|124
+  - What If...? (1989) - 115 issues: 4249|115
+  - Whiz Comics (1940) - 155 issues: 843|155
+  - Witchblade (1995) - 187 issues: 7300|187
+  - 'Wizard: The Comics Magazine (1991) - 242 issues': 18692|242
+  - Wolverine (1988) - 192 issues: 4250|192
+  - Wonder Woman (1942) - 329 issues: 18525|329
+  - Wonder Woman (1987) - 228 issues: 3824|228
+  - World's Finest Comics (1941) - 322 issues: 18006|322
+  - X-Factor (1986) - 150 issues: 3657|150
+  - X-Factor (2006) - 114 issues: 18109|114
+  - X-Force (1991) - 130 issues: 4604|130
+  - X-Men (1991) - 115 issues: 4605|115
+  - Young Love (1960) - 109 issues: 2114|109
+  - Young Romance (1947) - 208 issues: 2115|208
+  default:
+  - 6306|100
+  help_text: Use <kbd>⌘</kbd>+<kbd>click</kbd> or <kbd>Ctrl</kbd>+<kbd>click</kbd> to select multiple series. At least one series must be selected.
+- keyname: layout_orientation
+  field_type: select
+  name: Layout Orientation
+  description: Choose the display layout for your e-ink device.
+  options:
+  - Landscape: landscape
+  - Portrait: portrait
+  default: landscape
+- keyname: display_style
+  field_type: select
+  name: Display Style
+  description: Choose how comic information is displayed.
+  options:
+  - Cover + Full Details (Landscape only): full_details
+  - Covers Only: covers_only
+  default: covers_only
+name: Comic Book Covers
+refresh_interval: 15

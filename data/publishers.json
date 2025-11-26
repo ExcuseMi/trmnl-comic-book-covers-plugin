@@ -1,0 +1,902 @@
+[
+  {
+    "id": 31,
+    "name": "Marvel",
+    "api_name": "Marvel",
+    "deck": "",
+    "description": "",
+    "issue_count": 1456,
+    "image": ""
+  },
+  {
+    "id": 10,
+    "name": "DC Comics",
+    "api_name": "DC Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 1147,
+    "image": ""
+  },
+  {
+    "id": 364,
+    "name": "Dark Horse Comics",
+    "api_name": "Dark Horse Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 212,
+    "image": ""
+  },
+  {
+    "id": 513,
+    "name": "Image",
+    "api_name": "Image",
+    "deck": "",
+    "description": "",
+    "issue_count": 200,
+    "image": ""
+  },
+  {
+    "id": 178,
+    "name": "Western Publishing",
+    "api_name": "Western Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 102,
+    "image": ""
+  },
+  {
+    "id": 4,
+    "name": "Dell",
+    "api_name": "Dell",
+    "deck": "",
+    "description": "",
+    "issue_count": 96,
+    "image": ""
+  },
+  {
+    "id": 125,
+    "name": "Charlton",
+    "api_name": "Charlton",
+    "deck": "",
+    "description": "",
+    "issue_count": 95,
+    "image": ""
+  },
+  {
+    "id": 285,
+    "name": "Eclipse",
+    "api_name": "Eclipse",
+    "deck": "",
+    "description": "",
+    "issue_count": 75,
+    "image": ""
+  },
+  {
+    "id": 101,
+    "name": "Archie Comics",
+    "api_name": "Archie Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 72,
+    "image": ""
+  },
+  {
+    "id": 20,
+    "name": "Harvey",
+    "api_name": "Harvey",
+    "deck": "",
+    "description": "",
+    "issue_count": 63,
+    "image": ""
+  },
+  {
+    "id": 447,
+    "name": "Malibu",
+    "api_name": "Malibu",
+    "deck": "",
+    "description": "",
+    "issue_count": 56,
+    "image": ""
+  },
+  {
+    "id": 485,
+    "name": "Valiant/Acclaim",
+    "api_name": "Valiant/Acclaim",
+    "deck": "",
+    "description": "",
+    "issue_count": 50,
+    "image": ""
+  },
+  {
+    "id": 89,
+    "name": "EC",
+    "api_name": "EC",
+    "deck": "",
+    "description": "",
+    "issue_count": 39,
+    "image": ""
+  },
+  {
+    "id": 18,
+    "name": "Fox Comics (US)",
+    "api_name": "Fox Comics (US)",
+    "deck": "",
+    "description": "",
+    "issue_count": 39,
+    "image": ""
+  },
+  {
+    "id": 171,
+    "name": "I.W. Publishing",
+    "api_name": "I.W. Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 32,
+    "image": ""
+  },
+  {
+    "id": 324,
+    "name": "First",
+    "api_name": "First",
+    "deck": "",
+    "description": "",
+    "issue_count": 30,
+    "image": ""
+  },
+  {
+    "id": 309,
+    "name": "Fantagraphics",
+    "api_name": "Fantagraphics",
+    "deck": "",
+    "description": "",
+    "issue_count": 29,
+    "image": ""
+  },
+  {
+    "id": 573,
+    "name": "Caliber Comics",
+    "api_name": "Caliber Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 26,
+    "image": ""
+  },
+  {
+    "id": 336,
+    "name": "Comico",
+    "api_name": "Comico",
+    "deck": "",
+    "description": "",
+    "issue_count": 25,
+    "image": ""
+  },
+  {
+    "id": 335,
+    "name": "AC Comics",
+    "api_name": "AC Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 23,
+    "image": ""
+  },
+  {
+    "id": 34,
+    "name": "Fawcett Publications",
+    "api_name": "Fawcett Publications",
+    "deck": "",
+    "description": "",
+    "issue_count": 22,
+    "image": ""
+  },
+  {
+    "id": 519,
+    "name": "Topps Comics",
+    "api_name": "Topps Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 22,
+    "image": ""
+  },
+  {
+    "id": 10940,
+    "name": "Egmont Comics",
+    "api_name": "Egmont Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 21,
+    "image": ""
+  },
+  {
+    "id": 236,
+    "name": "Kitchen Sink",
+    "api_name": "Kitchen Sink",
+    "deck": "",
+    "description": "",
+    "issue_count": 21,
+    "image": ""
+  },
+  {
+    "id": 1190,
+    "name": "IDW Publishing",
+    "api_name": "IDW Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 20,
+    "image": ""
+  },
+  {
+    "id": 337,
+    "name": "Continuity",
+    "api_name": "Continuity",
+    "deck": "",
+    "description": "",
+    "issue_count": 20,
+    "image": ""
+  },
+  {
+    "id": 428,
+    "name": "Viz",
+    "api_name": "Viz",
+    "deck": "",
+    "description": "",
+    "issue_count": 20,
+    "image": ""
+  },
+  {
+    "id": 1099,
+    "name": "Crossgen",
+    "api_name": "Crossgen",
+    "deck": "",
+    "description": "",
+    "issue_count": 20,
+    "image": ""
+  },
+  {
+    "id": 257,
+    "name": "Williams Förlag AB",
+    "api_name": "Williams Förlag AB",
+    "deck": "",
+    "description": "",
+    "issue_count": 19,
+    "image": ""
+  },
+  {
+    "id": 113,
+    "name": "American Comics Group",
+    "api_name": "American Comics Group",
+    "deck": "",
+    "description": "",
+    "issue_count": 18,
+    "image": ""
+  },
+  {
+    "id": 4198,
+    "name": "Carlsen/if",
+    "api_name": "Carlsen/if",
+    "deck": "",
+    "description": "",
+    "issue_count": 17,
+    "image": ""
+  },
+  {
+    "id": 252,
+    "name": "Atlas Comics",
+    "api_name": "Atlas Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 16,
+    "image": ""
+  },
+  {
+    "id": 2509,
+    "name": "Pacific Comics",
+    "api_name": "Pacific Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 16,
+    "image": ""
+  },
+  {
+    "id": 718,
+    "name": "Avatar Press",
+    "api_name": "Avatar Press",
+    "deck": "",
+    "description": "",
+    "issue_count": 16,
+    "image": ""
+  },
+  {
+    "id": 438,
+    "name": "Andrews McMeel Publishing",
+    "api_name": "Andrews McMeel Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 16,
+    "image": ""
+  },
+  {
+    "id": 276,
+    "name": "Warp Graphics",
+    "api_name": "Warp Graphics",
+    "deck": "",
+    "description": "",
+    "issue_count": 15,
+    "image": ""
+  },
+  {
+    "id": 2812,
+    "name": "Marvel UK/Panini UK",
+    "api_name": "Marvel UK/Panini UK",
+    "deck": "",
+    "description": "",
+    "issue_count": 15,
+    "image": ""
+  },
+  {
+    "id": 479,
+    "name": "Epix",
+    "api_name": "Epix",
+    "deck": "",
+    "description": "",
+    "issue_count": 15,
+    "image": ""
+  },
+  {
+    "id": 1868,
+    "name": "Boom! Studios",
+    "api_name": "Boom! Studios",
+    "deck": "",
+    "description": "",
+    "issue_count": 14,
+    "image": ""
+  },
+  {
+    "id": 345,
+    "name": "Blackthorne",
+    "api_name": "Blackthorne",
+    "deck": "",
+    "description": "",
+    "issue_count": 14,
+    "image": ""
+  },
+  {
+    "id": 682,
+    "name": "Oni Press",
+    "api_name": "Oni Press",
+    "deck": "",
+    "description": "",
+    "issue_count": 14,
+    "image": ""
+  },
+  {
+    "id": 121,
+    "name": "Avon",
+    "api_name": "Avon",
+    "deck": "",
+    "description": "",
+    "issue_count": 13,
+    "image": ""
+  },
+  {
+    "id": 383,
+    "name": "SLG Publishing",
+    "api_name": "SLG Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 13,
+    "image": ""
+  },
+  {
+    "id": 267,
+    "name": "Atlantic Förlags AB",
+    "api_name": "Atlantic Förlags AB",
+    "deck": "",
+    "description": "",
+    "issue_count": 13,
+    "image": ""
+  },
+  {
+    "id": 1984,
+    "name": "Heroic Publishing",
+    "api_name": "Heroic Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 12,
+    "image": ""
+  },
+  {
+    "id": 595,
+    "name": "Sirius Entertainment",
+    "api_name": "Sirius Entertainment",
+    "deck": "",
+    "description": "",
+    "issue_count": 12,
+    "image": ""
+  },
+  {
+    "id": 2949,
+    "name": "Pines Publishing",
+    "api_name": "Pines Publishing",
+    "deck": "",
+    "description": "",
+    "issue_count": 11,
+    "image": ""
+  },
+  {
+    "id": 390,
+    "name": "Now Comics",
+    "api_name": "Now Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 11,
+    "image": ""
+  },
+  {
+    "id": 15,
+    "name": "Quality Comics",
+    "api_name": "Quality Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 117,
+    "name": "Star Publications",
+    "api_name": "Star Publications",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 7136,
+    "name": "Stanley Morse",
+    "api_name": "Stanley Morse",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 173,
+    "name": "Warren",
+    "api_name": "Warren",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 214,
+    "name": "Skywald",
+    "api_name": "Skywald",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 488,
+    "name": "Antarctic Press",
+    "api_name": "Antarctic Press",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 651,
+    "name": "Event Comics",
+    "api_name": "Event Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 1859,
+    "name": "Dynamite Entertainment",
+    "api_name": "Dynamite Entertainment",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 1863,
+    "name": "Devil's Due",
+    "api_name": "Devil's Due",
+    "deck": "",
+    "description": "",
+    "issue_count": 10,
+    "image": ""
+  },
+  {
+    "id": 2043,
+    "name": "St. John Publishing Co.",
+    "api_name": "St. John Publishing Co.",
+    "deck": "",
+    "description": "",
+    "issue_count": 9,
+    "image": ""
+  },
+  {
+    "id": 123,
+    "name": "Toby",
+    "api_name": "Toby",
+    "deck": "",
+    "description": "",
+    "issue_count": 9,
+    "image": ""
+  },
+  {
+    "id": 3534,
+    "name": "Quality Communications",
+    "api_name": "Quality Communications",
+    "deck": "",
+    "description": "",
+    "issue_count": 9,
+    "image": ""
+  },
+  {
+    "id": 530,
+    "name": "Bongo",
+    "api_name": "Bongo",
+    "deck": "",
+    "description": "",
+    "issue_count": 9,
+    "image": ""
+  },
+  {
+    "id": 1862,
+    "name": "Aspen MLT",
+    "api_name": "Aspen MLT",
+    "deck": "",
+    "description": "",
+    "issue_count": 9,
+    "image": ""
+  },
+  {
+    "id": 8,
+    "name": "Fiction House",
+    "api_name": "Fiction House",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 136,
+    "name": "Superior Publishers Limited",
+    "api_name": "Superior Publishers Limited",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 2419,
+    "name": "Ajax-Farrell",
+    "api_name": "Ajax-Farrell",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 238,
+    "name": "Hemmets Journal AB",
+    "api_name": "Hemmets Journal AB",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 446,
+    "name": "Innovation",
+    "api_name": "Innovation",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 464,
+    "name": "Disney",
+    "api_name": "Disney",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 496,
+    "name": "Harris Comics",
+    "api_name": "Harris Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 8,
+    "image": ""
+  },
+  {
+    "id": 131,
+    "name": "Ziff-Davis",
+    "api_name": "Ziff-Davis",
+    "deck": "",
+    "description": "",
+    "issue_count": 7,
+    "image": ""
+  },
+  {
+    "id": 194,
+    "name": "Tower",
+    "api_name": "Tower",
+    "deck": "",
+    "description": "",
+    "issue_count": 7,
+    "image": ""
+  },
+  {
+    "id": 323,
+    "name": "Eagle Comics",
+    "api_name": "Eagle Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 7,
+    "image": ""
+  },
+  {
+    "id": 3605,
+    "name": "Fictioneer Books",
+    "api_name": "Fictioneer Books",
+    "deck": "",
+    "description": "",
+    "issue_count": 7,
+    "image": ""
+  },
+  {
+    "id": 1127,
+    "name": "Modern",
+    "api_name": "Modern",
+    "deck": "",
+    "description": "",
+    "issue_count": 7,
+    "image": ""
+  },
+  {
+    "id": 32,
+    "name": "Ace Magazines",
+    "api_name": "Ace Magazines",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 52,
+    "name": "Lev Gleason",
+    "api_name": "Lev Gleason",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 2781,
+    "name": "Shogakukan",
+    "api_name": "Shogakukan",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 2378,
+    "name": "Murray Comics",
+    "api_name": "Murray Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 352,
+    "name": "Renegade Press",
+    "api_name": "Renegade Press",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 368,
+    "name": "Fantagor Press",
+    "api_name": "Fantagor Press",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 367,
+    "name": "Eternity",
+    "api_name": "Eternity",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 4322,
+    "name": "Fleetway Quality",
+    "api_name": "Fleetway Quality",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 393,
+    "name": "Apple",
+    "api_name": "Apple",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 2041,
+    "name": "Drawn & Quarterly",
+    "api_name": "Drawn & Quarterly",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 809,
+    "name": "Allers",
+    "api_name": "Allers",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 1121,
+    "name": "New England Comics",
+    "api_name": "New England Comics",
+    "deck": "",
+    "description": "",
+    "issue_count": 6,
+    "image": ""
+  },
+  {
+    "id": 22,
+    "name": "Eastern Color",
+    "api_name": "Eastern Color",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 84,
+    "name": "Magazine Enterprises",
+    "api_name": "Magazine Enterprises",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 1337,
+    "name": "Tokyopop",
+    "api_name": "Tokyopop",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 184,
+    "name": "Editoriale Corno",
+    "api_name": "Editoriale Corno",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 823,
+    "name": "Eros Comix",
+    "api_name": "Eros Comix",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 100,
+    "name": "Sergio Bonelli Editore",
+    "api_name": "Sergio Bonelli Editore",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 517,
+    "name": "Mirage",
+    "api_name": "Mirage",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 1978,
+    "name": "TidalWave Productions",
+    "api_name": "TidalWave Productions",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 837,
+    "name": "Red Clown",
+    "api_name": "Red Clown",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 1315,
+    "name": "Bell Features",
+    "api_name": "Bell Features",
+    "deck": "",
+    "description": "",
+    "issue_count": 5,
+    "image": ""
+  },
+  {
+    "id": 5,
+    "name": "United Feature Syndicate",
+    "api_name": "United Feature Syndicate",
+    "deck": "",
+    "description": "",
+    "issue_count": 4,
+    "image": ""
+  },
+  {
+    "id": 14,
+    "name": "David McKay",
+    "api_name": "David McKay",
+    "deck": "",
+    "description": "",
+    "issue_count": 4,
+    "image": ""
+  },
+  {
+    "id": 37,
+    "name": "Hillman",
+    "api_name": "Hillman",
+    "deck": "",
+    "description": "",
+    "issue_count": 4,
+    "image": ""
+  },
+  {
+    "id": 45,
+    "name": "Prize",
+    "api_name": "Prize",
+    "deck": "",
+    "description": "",
+    "issue_count": 4,
+    "image": ""
+  }
+]
