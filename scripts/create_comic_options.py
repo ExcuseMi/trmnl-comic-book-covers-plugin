@@ -133,18 +133,6 @@ def create_comic_options_yml():
                 f"{sorted_series[0]['id']}|{sorted_series[0].get('issue_count', 200)}"] if sorted_series else [],
             'help_text': "Use <kbd>⌘</kbd>+<kbd>click</kbd> or <kbd>Ctrl</kbd>+<kbd>click</kbd> to select multiple series. At least one series must be selected.",
         },
-        # Layout Orientation
-        {
-            'keyname': 'layout_orientation',
-            'field_type': 'select',
-            'name': 'Layout Orientation',
-            'description': 'Choose the display layout for your e-ink device.',
-            'options': [
-                {'Landscape': 'landscape'},
-                {'Portrait': 'portrait'}
-            ],
-            'default': 'landscape'
-        },
         # Display Options
         {
             'keyname': 'display_style',
@@ -152,10 +140,23 @@ def create_comic_options_yml():
             'name': 'Display Style',
             'description': 'Choose how comic information is displayed.',
             'options': [
-                {'Cover + Full Details (Landscape only)': 'full_details'},
-                {'Covers Only': 'covers_only'}
+                {'Full Screen Covers Landscape': 'full|cover|landscape|3'},
+                {'Full Screen Details Landscape': 'full|details|landscape|1'},
+                {'Full Screen Cover Portrait': 'full|cover|portrait|1'},
+
+                {'Half horizontal Cover Landscape': 'horizontal|cover|landscape|4'},
+                {'Half horizontal Details Landscape': 'horizontal|details|landscape|1'},
+                {'Half horizontal Cover Portrait': 'horizontal|cover|portrait|2'},
+
+                {'Half vertical Cover Landscape': 'vertical|cover|landscape|1'},
+                {'Half vertical Cover Portrait': 'vertical|cover|portrait|1'},
+
+                {'Quadrant Covers Landscape': 'quadrant|cover|landscape|3'},
+                {'Quadrant Details Landscape': 'quadrant|details|landscape|1'},
+                {'Quadrant Covers Portrait': 'quadrant|cover|portrait|1'},
             ],
-            'default': 'covers_only'
+            'multiple': False,
+            'optional': False,
         },
     ]
 
