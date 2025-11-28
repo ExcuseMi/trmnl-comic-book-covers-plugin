@@ -86,9 +86,9 @@ def create_comic_options_yml():
         'name': 'About This Plugin',
         'field_type': 'author_bio',
         'description':
-            f"Display random comic book covers on your TRMNL e-ink device using the Comic Vine API.<br /><br />"
+            f"Display random comic book covers on your TRMNL e-ink device using the <strong><a href:'https://comicvine.gamespot.com/'>Comic Vine</a></strong> API.<br /><br />"
             f"<strong>Series-Based Approach:</strong><br />"
-            f"• Select from {len(sorted_series)} most popular comic series<br />"
+            f"• Select from {len(sorted_series)} most popular comic series<br /><br />"
             f"<strong>Setup:</strong><br />"
             f"1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />"
             f"2. Add your API key to the field below<br />"
@@ -157,6 +157,19 @@ def create_comic_options_yml():
             ],
             'multiple': False,
             'optional': False,
+        },
+        {
+            'keyname': 'show_background',
+            'field_type': 'select',
+            'name': 'Show a comic background',
+            'description': 'Show a blurred out comic in the background.',
+            'options': [
+                {'No': 'no'},
+                {'Yes': 'yes'},
+            ],
+            'multiple': False,
+            'optional': False,
+            'default': "yes"
         },
     ]
 

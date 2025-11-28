@@ -4,7 +4,7 @@ assign display_style = trmnl.plugin_settings.custom_fields_values.display_style 
 assign display_style_parts = display_style | split: "|"
 assign display_mode = display_style_parts[1]
 assign screen = display_style_parts[0]
-
+assign show_background = trmnl.plugin_settings.custom_fields_values.show_background | default: "yes"
 assign layout_orientation = display_style_parts[2]
 assign max_comics = display_style_parts[3] | plus: 0
 
@@ -12,7 +12,7 @@ assign max_comics = display_style_parts[3] | plus: 0
 assign comics = "" | split: "" 
 
 # Loop over IDX_ variables until nothing is found
-for i in (1..5)
+for i in (0..5)
 assign idx_name = "IDX_" | append: i
 assign idx_data = [idx_name]
 
@@ -73,7 +73,7 @@ assign comics_count = comics.size
 {% assign background_url = random_comic.image.screen_url | default: random_comic.image.medium_url | default: "" %}
 
 {% comment %} Background Image - outside columns {% endcomment %}
-{% if background_url != "" %}
+{% if show_background == "yes" and background_url != "" %}
 <img src="{{ background_url }}" class="image-dither image comic-bg"/>
 {% endif %}
 

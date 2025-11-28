@@ -12,7 +12,7 @@ custom_fields:
 - keyname: about
   name: About This Plugin
   field_type: author_bio
-  description: Display random comic book covers on your TRMNL e-ink device using the Comic Vine API.<br /><br /><strong>Series-Based Approach:</strong><br />• Select from 250 most popular comic series<br /><strong>Setup:</strong><br />1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />2. Add your API key to the field below<br />3. Select your favorite series (required)<br /><br />
+  description: Display random comic book covers on your TRMNL e-ink device using the <strong><a href:'https://comicvine.gamespot.com/'>Comic Vine</a></strong> API.<br /><br /><strong>Series-Based Approach:</strong><br />• Select from 250 most popular comic series<br /><br /><strong>Setup:</strong><br />1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />2. Add your API key to the field below<br />3. Select your favorite series (required)<br /><br />
   learn_more_url: https://comicvine.gamespot.com/api/
   github_url: https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin
   category: comics,art
@@ -300,5 +300,15 @@ custom_fields:
   - Quadrant Covers Portrait: quadrant|cover|portrait|1
   multiple: false
   optional: false
+- keyname: show_background
+  field_type: select
+  name: Show a comic background
+  description: Show a blurred out comic in the background.
+  options:
+  - 'No': 'no'
+  - 'Yes': 'yes'
+  multiple: false
+  optional: false
+  default: 'yes'
 name: Comic Book Covers
 refresh_interval: 15
