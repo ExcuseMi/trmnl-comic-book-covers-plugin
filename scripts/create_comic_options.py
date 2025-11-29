@@ -161,8 +161,8 @@ def create_comic_options_yml():
         {
             'keyname': 'show_background',
             'field_type': 'select',
-            'name': 'Show a comic background',
-            'description': 'Show a blurred out comic in the background.',
+            'name': 'Show a comic as background',
+            'description': 'Show a blurred out comic as the background.',
             'options': [
                 {'No': 'no'},
                 {'Yes': 'yes'},
