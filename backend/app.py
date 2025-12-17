@@ -2,7 +2,7 @@ from flask import Flask, request, send_file, jsonify, abort
 import requests
 from io import BytesIO
 from functools import lru_cache
-from urllib.parse import quote, unquote
+from urllib.parse import unquote
 import logging
 
 # Setup logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
-# Cache images for 1 hour (maxsize=200 means ~200 different images cached)
+# Cache images for 1 hour
 @lru_cache(maxsize=200)
 def fetch_comic_vine_image(url):
     """Fetch and cache Comic Vine images with proper headers"""
@@ -72,70 +72,38 @@ def proxy_image():
     )
 
 
-@app.route('/api/issues')
-@app.route('/comic-book-covers/api/issues')
-def proxy_issues():
-    """
-    Proxy Comic Vine API and rewrite image URLs to use our proxy
-    This endpoint replaces direct Comic Vine API calls in TRMNL
-    """
-    # Get all query params and forward to Comic Vine
-    params = dict(request.args)
-
-    logger.info(f"Proxying API request with params: {params}")
-
-    try:
-        response = requests.get(
-            'https://comicvine.gamespot.com/api/issues',
-            params=params,
-            timeout=20
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        # Get the base URL for this request
-        base_url = request.host_url.rstrip('/')
-
-        # Rewrite image URLs in the response
-        if 'results' in data:
-            for comic in data['results']:
-                if 'image' in comic and comic['image']:
-                    for key in ['small_url', 'medium_url', 'screen_url', 'original_url',
-                                'icon_url', 'tiny_url', 'thumb_url', 'super_url']:
-                        if key in comic['image'] and comic['image'][key]:
-                            original = comic['image'][key]
-                            # Rewrite to use our proxy
-                            comic['image'][key] = f"{base_url}/image?url={quote(original)}"
-
-            logger.info(f"Proxied {len(data['results'])} results with rewritten image URLs")
-
-        return jsonify(data)
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error proxying API: {e}")
-        abort(500, f'Error proxying Comic Vine API: {str(e)}')
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        abort(500, f'Unexpected error: {str(e)}')
-
-
 @app.route('/health')
 def health():
     """Health check endpoint"""
-    return jsonify({'status': 'ok'})
+    return jsonify({'status': 'ok', 'mode': 'image-only-proxy'})
 
 
 @app.route('/')
 def index():
     """Root endpoint with usage info"""
     return jsonify({
-        'service': 'Comic Vine Image Proxy',
+        'service': 'Comic Vine Image Proxy (Image-Only Mode)',
+        'note': 'This version ONLY proxies images, not API calls',
+        'usage': {
+            'step1': 'Keep using Comic Vine API directly in your TRMNL polling URL',
+            'step2': 'Add this JavaScript to your TRMNL plugin markup to rewrite image URLs',
+            'javascript': '''
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const baseUrl = 'https://trmnl.bettens.dev';
+    document.querySelectorAll('img').forEach(img => {
+        if (img.src && img.src.includes('comicvine.gamespot.com')) {
+            img.src = baseUrl + '/image?url=' + encodeURIComponent(img.src);
+        }
+    });
+});
+</script>
+            '''
+        },
         'endpoints': {
-            '/comic-book-covers/api/issues': 'Proxy Comic Vine API with image URL rewriting',
             '/image?url=<url>': 'Proxy individual Comic Vine images',
             '/health': 'Health check'
-        },
-        'usage': 'Update your TRMNL plugin to use https://your-domain/comic-book-covers/api/issues instead of Comic Vine API directly'
+        }
     })
 
 
