@@ -72,6 +72,7 @@ def proxy_image():
     )
 
 
+@app.route('/api/issues')
 @app.route('/comic-book-covers/api/issues')
 def proxy_issues():
     """
@@ -123,6 +124,19 @@ def health():
     """Health check endpoint"""
     return jsonify({'status': 'ok'})
 
+
+@app.route('/')
+def index():
+    """Root endpoint with usage info"""
+    return jsonify({
+        'service': 'Comic Vine Image Proxy',
+        'endpoints': {
+            '/comic-book-covers/api/issues': 'Proxy Comic Vine API with image URL rewriting',
+            '/image?url=<url>': 'Proxy individual Comic Vine images',
+            '/health': 'Health check'
+        },
+        'usage': 'Update your TRMNL plugin to use https://your-domain/comic-book-covers/api/issues instead of Comic Vine API directly'
+    })
 
 
 if __name__ == '__main__':
