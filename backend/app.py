@@ -146,11 +146,11 @@ def proxy_issues():
     rate_limit_api_request()
 
     # Add headers for API requests (different from image requests)
+    # Note: Don't manually specify Accept-Encoding - let requests handle it
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/html, */*',
         'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
         'Referer': 'https://comicvine.gamespot.com/',
     }
 
@@ -175,17 +175,20 @@ def proxy_issues():
 
         logger.info(f"API response status: {response.status_code}")
         logger.info(f"API response content-type: {response.headers.get('content-type')}")
-
-        # Log first 500 chars of response for debugging
-        response_preview = response.text[:500] if len(response.text) > 500 else response.text
-        logger.info(f"API response preview: {response_preview}")
+        logger.info(f"API response content-encoding: {response.headers.get('content-encoding')}")
 
         response.raise_for_status()
 
         try:
+            # Use .json() directly - it handles decompression automatically
             data = response.json()
+            logger.info(f"Successfully parsed JSON response with {len(data.get('results', []))} results")
         except ValueError as e:
-            logger.error(f"Failed to parse JSON response. Response text: {response.text[:1000]}")
+            # Only access .text if JSON parsing fails (for debugging)
+            logger.error(f"Failed to parse JSON. Status: {response.status_code}")
+            logger.error(f"Content-Encoding: {response.headers.get('content-encoding')}")
+            logger.error(f"Content-Type: {response.headers.get('content-type')}")
+            logger.error(f"Response text preview: {response.text[:500]}")
             abort(500, f'Comic Vine returned invalid JSON: {str(e)}')
 
         # Get the base URL for this request
