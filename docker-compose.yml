@@ -2,12 +2,18 @@ version: '3.8'
 
 services:
   comic-vine-proxy:
-    build: backend
+    build: .
     container_name: comic-vine-proxy
     ports:
-      - "5006:5000"
+      - "5006:5000"  # External:Internal
+    env_file:
+      - .env
     environment:
       - FLASK_ENV=production
+      # Optional: Proxy configuration (only needed if Comic Vine blocks your server IP)
+      # Uncomment and configure if using a proxy service like Webshare.io
+      # - HTTP_PROXY=http://username:password@proxy-host:port
+      # - HTTPS_PROXY=http://username:password@proxy-host:port
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]

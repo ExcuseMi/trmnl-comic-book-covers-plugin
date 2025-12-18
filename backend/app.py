@@ -20,6 +20,7 @@ session = requests.Session()
 api_request_lock = threading.Lock()
 last_api_request_time = 0
 
+
 def rate_limit_api_request():
     """Ensure minimum 1 second between API requests"""
     global last_api_request_time
@@ -31,6 +32,7 @@ def rate_limit_api_request():
             logger.info(f"Rate limiting: sleeping for {sleep_time:.2f}s")
             time.sleep(sleep_time)
         last_api_request_time = time.time()
+
 
 # Cache images for 1 hour (maxsize=200 means ~200 different images cached)
 @lru_cache(maxsize=200)
@@ -51,7 +53,7 @@ def fetch_comic_vine_image(url, use_proxy=True):
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
     }
-    
+
     # Optional: Use a proxy if configured
     # Set these environment variables or hardcode your proxy
     proxies = None
@@ -64,7 +66,7 @@ def fetch_comic_vine_image(url, use_proxy=True):
                 'https': proxy_url
             }
             logger.info(f"Using proxy for request")
-    
+
     try:
         logger.info(f"Fetching image: {url}")
         response = session.get(url, headers=headers, proxies=proxies, timeout=15, allow_redirects=True)
@@ -78,43 +80,45 @@ def fetch_comic_vine_image(url, use_proxy=True):
         logger.error(f"Request failed for {url}: {type(e).__name__} - {str(e)}")
         return None
 
+
 @app.route('/image')
 @app.route('/comic-book-covers/image')
 def proxy_image():
     """Proxy Comic Vine images to avoid hotlinking protection"""
     url = request.args.get('url')
-    
+
     if not url:
         logger.warning("Missing url parameter")
         abort(400, 'Missing url parameter')
-    
+
     # Decode if URL encoded
     url = unquote(url)
-    
+
     # Security check - only allow Comic Vine images
     if 'comicvine.gamespot.com' not in url:
         logger.warning(f"Invalid URL domain: {url}")
         abort(400, 'Invalid URL domain')
-    
+
     content = fetch_comic_vine_image(url)
-    
+
     if content is None:
         logger.error(f"Image not found: {url}")
         abort(404, 'Image not found')
-    
+
     # Determine content type from URL
     content_type = 'image/jpeg'
     if url.lower().endswith('.png'):
         content_type = 'image/png'
     elif url.lower().endswith('.webp'):
         content_type = 'image/webp'
-    
+
     return send_file(
         BytesIO(content),
         mimetype=content_type,
         as_attachment=False,
         download_name='cover.jpg'
     )
+
 
 @app.route('/api/issues')
 @app.route('/comic-book-covers/api/issues')
@@ -125,12 +129,22 @@ def proxy_issues():
     """
     # Get all query params and forward to Comic Vine
     params = dict(request.args)
-    
+
+    # Inject API key from environment if not provided
+    import os
+    if 'api_key' not in params or not params['api_key']:
+        env_api_key = os.environ.get('COMIC_VINE_API_KEY')
+        if env_api_key:
+            params['api_key'] = env_api_key
+            logger.info("Using API key from environment variable")
+        else:
+            logger.warning("No API key provided in request or environment")
+
     logger.info(f"Proxying API request with params: {params}")
-    
+
     # Rate limit to avoid triggering Comic Vine's anti-bot measures
     rate_limit_api_request()
-    
+
     # Add headers to avoid being blocked by Comic Vine
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -145,7 +159,7 @@ def proxy_issues():
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin'
     }
-    
+
     try:
         response = session.get(
             'https://comicvine.gamespot.com/api/issues',
@@ -153,32 +167,45 @@ def proxy_issues():
             headers=headers,
             timeout=20
         )
+
+        logger.info(f"API response status: {response.status_code}")
+        logger.info(f"API response content-type: {response.headers.get('content-type')}")
+
+        # Log first 500 chars of response for debugging
+        response_preview = response.text[:500] if len(response.text) > 500 else response.text
+        logger.info(f"API response preview: {response_preview}")
+
         response.raise_for_status()
-        data = response.json()
-        
+
+        try:
+            data = response.json()
+        except ValueError as e:
+            logger.error(f"Failed to parse JSON response. Response text: {response.text[:1000]}")
+            abort(500, f'Comic Vine returned invalid JSON: {str(e)}')
+
         # Get the base URL for this request
         base_url = request.host_url.rstrip('/')
-        
+
         # Rewrite image URLs in the response
         if 'results' in data:
             for comic in data['results']:
                 if 'image' in comic and comic['image']:
-                    for key in ['small_url', 'medium_url', 'screen_url', 'original_url', 
-                               'icon_url', 'tiny_url', 'thumb_url', 'super_url']:
+                    for key in ['small_url', 'medium_url', 'screen_url', 'original_url',
+                                'icon_url', 'tiny_url', 'thumb_url', 'super_url']:
                         if key in comic['image'] and comic['image'][key]:
                             original = comic['image'][key]
                             # Rewrite to use our proxy
                             comic['image'][key] = f"{base_url}/image?url={quote(original)}"
-            
+
             logger.info(f"Proxied {len(data['results'])} results with rewritten image URLs")
-        
+
         return jsonify(data)
-    
+
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 403:
             logger.warning(f"Comic Vine returned 403 - they may be blocking this server's IP")
             logger.warning("Falling back to passthrough mode - API works but images won't be proxied")
-            
+
             # Return error with helpful message
             return jsonify({
                 'error': 'Comic Vine API blocking detected',
@@ -200,10 +227,12 @@ def proxy_issues():
         logger.error(f"Unexpected error: {e}")
         abort(500, f'Unexpected error: {str(e)}')
 
+
 @app.route('/health')
 def health():
     """Health check endpoint"""
     return jsonify({'status': 'ok'})
+
 
 @app.route('/')
 def index():
@@ -217,6 +246,7 @@ def index():
         },
         'usage': 'Update your TRMNL plugin to use https://your-domain/comic-book-covers/api/issues instead of Comic Vine API directly'
     })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
