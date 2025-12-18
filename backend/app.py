@@ -160,9 +160,9 @@ async def fetch_popular_series():
                 'field_list': 'id,name,count_of_issues,start_year,publisher'
             }
 
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
                 response = await client.get(
-                    'https://comicvine.gamespot.com/api/volumes',
+                    'https://comicvine.gamespot.com/api/volumes/',  # Note trailing slash
                     params=params,
                     headers=headers
                 )
