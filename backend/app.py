@@ -584,7 +584,121 @@ def health():
     return jsonify(health_data)
 
 
-@app.route('/series/search', methods=['POST', 'GET', 'OPTIONS'])
+@app.route('/comics/random', methods=['GET'])
+@require_whitelisted_ip
+def get_random_comics():
+    """
+    Get random comic issues based on selected series and display style
+
+    Query params:
+    - series_ids: comma-separated list of series IDs (e.g., "6306,2340,1234")
+    - count: number of comics to return (default: 3, max: 10)
+    - seed: optional seed for reproducible randomization (default: current hour)
+
+    Returns: JSON with comic issues ready for display
+    """
+    import random
+    from datetime import datetime
+
+    # Get parameters
+    series_ids_str = request.args.get('series_ids', '')
+    count = min(int(request.args.get('count', 3)), 10)
+    seed = request.args.get('seed')
+
+    # Use current hour as default seed for hourly rotation
+    if not seed:
+        seed = datetime.utcnow().strftime('%Y%m%d%H')
+
+    logger.info(f"Random comics request: series_ids={series_ids_str}, count={count}, seed={seed}")
+
+    if not series_ids_str:
+        return jsonify({
+            'error': 'Missing required parameter: series_ids',
+            'example': '/comics/random?series_ids=6306,2340&count=3'
+        }), 400
+
+    # Parse series IDs
+    series_ids = [sid.strip() for sid in series_ids_str.split(',') if sid.strip()]
+
+    if not series_ids:
+        return jsonify({'error': 'No valid series IDs provided'}), 400
+
+    # Initialize random with seed for reproducibility
+    rng = random.Random(seed)
+
+    all_issues = []
+
+    try:
+        # Fetch issues from each series
+        for series_id in series_ids[:count]:  # Limit to count series
+            # Randomize offset for variety
+            offset = rng.randint(0, 100)
+
+            params = {
+                'api_key': COMIC_VINE_API_KEY,
+                'format': 'json',
+                'field_list': 'name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url',
+                'limit': 1,
+                'filter': f'volume:{series_id}',
+                'offset': offset,
+                'sort': 'cover_date'
+            }
+
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json',
+                'Referer': 'https://comicvine.gamespot.com/'
+            }
+
+            # Rate limit
+            rate_limit_api_request()
+
+            response = session.get(
+                'https://comicvine.gamespot.com/api/issues/',
+                params=params,
+                headers=headers,
+                timeout=10
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            if data.get('results'):
+                for issue in data['results']:
+                    # Rewrite image URLs to use our proxy
+                    if 'image' in issue and issue['image']:
+                        for key in ['small_url', 'medium_url', 'screen_url', 'original_url']:
+                            if key in issue['image'] and issue['image'][key]:
+                                original_url = issue['image'][key]
+                                if 'comicvine.gamespot.com' in original_url:
+                                    scheme = request.scheme
+                                    host = request.host
+                                    issue['image'][
+                                        key] = f"{scheme}://{host}/comic-book-covers/image?url={quote(original_url)}"
+
+                    all_issues.append(issue)
+
+        # If we have more issues than requested, randomly select
+        if len(all_issues) > count:
+            all_issues = rng.sample(all_issues, count)
+
+        logger.info(f"Returning {len(all_issues)} random comics")
+
+        return jsonify({
+            'success': True,
+            'count': len(all_issues),
+            'series_ids': series_ids,
+            'seed': seed,
+            'results': all_issues
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching random comics: {e}")
+        return jsonify({
+            'error': str(e),
+            'success': False
+        }), 500
+
+
 def search_series():
     """
     Search endpoint for TRMNL xhrSelect field - NO IP WHITELIST
