@@ -205,8 +205,8 @@ async def fetch_popular_series():
             # Rate limit
             await asyncio.sleep(1)
 
-        # Sort alphabetically for easier searching
-        all_series.sort(key=lambda x: x['name'].lower())
+        # Keep sorted by popularity (count_of_issues) - already sorted by API
+        # Don't sort alphabetically - we want the most popular series first
 
         logger.info(f"Fetched {len(all_series)} popular series")
         return all_series
@@ -644,20 +644,23 @@ def search_series():
         logger.error("No series data available - returning empty results")
         return jsonify([])
 
-    # Return top 250 most popular series for xhrSelect dropdown
-    results = series_list[:250]
+    # Take top 250 by popularity (already sorted by issue count from API)
+    top_250 = series_list[:250]
 
-    logger.info(f"Returning {len(results)} series (top 250)")
+    # NOW sort alphabetically for easier browsing
+    top_250.sort(key=lambda x: x['name'].lower())
+
+    logger.info(f"Returning {len(top_250)} series (top 250 by popularity, sorted A-Z)")
 
     # Log first and last series for debugging
-    if results:
-        logger.info(f"First series: {results[0]['name']}")
-        logger.info(f"Last series: {results[-1]['name']}")
+    if top_250:
+        logger.info(f"First series: {top_250[0]['name']}")
+        logger.info(f"Last series: {top_250[-1]['name']}")
 
     # Format for TRMNL xhrSelect
     # Expected format: [{ 'Display Name' => 'id' }]
     formatted_results = []
-    for series in results:
+    for series in top_250:
         # Build display name
         display_name = series['name']
         if series.get('start_year'):
