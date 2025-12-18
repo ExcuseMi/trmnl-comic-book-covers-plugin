@@ -145,27 +145,32 @@ def proxy_issues():
     # Rate limit to avoid triggering Comic Vine's anti-bot measures
     rate_limit_api_request()
 
-    # Add headers to avoid being blocked by Comic Vine
+    # Add headers for API requests (different from image requests)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
+        'Accept': 'application/json, text/html, */*',
         'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Encoding': 'gzip, deflate, br',
         'Referer': 'https://comicvine.gamespot.com/',
-        'Sec-Ch-Ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'same-origin'
     }
 
+    # Get proxy settings if configured
+    import os
+    proxies = None
+    proxy_url = os.environ.get('HTTP_PROXY') or os.environ.get('HTTPS_PROXY')
+    if proxy_url:
+        proxies = {'http': proxy_url, 'https': proxy_url}
+        logger.info("Using proxy for API request")
+
     try:
-        response = session.get(
+        # Use requests.get directly (not session) to avoid cookie interference
+        response = requests.get(
             'https://comicvine.gamespot.com/api/issues',
             params=params,
             headers=headers,
-            timeout=20
+            proxies=proxies,
+            timeout=20,
+            allow_redirects=True
         )
 
         logger.info(f"API response status: {response.status_code}")
