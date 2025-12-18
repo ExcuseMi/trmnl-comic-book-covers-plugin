@@ -1,5 +1,4 @@
 from flask import Flask, request, send_file, jsonify, abort
-from flask_cors import CORS
 import requests
 from io import BytesIO
 from functools import lru_cache, wraps
@@ -18,15 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Enable CORS for TRMNL domain
-CORS(app, resources={
-    r"/series/*": {
-        "origins": ["https://usetrmnl.com", "https://www.usetrmnl.com"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"],
-        "supports_credentials": False
-    }
-})
+# Note: CORS is handled by Caddy reverse proxy, not here
 
 # Configuration
 ENABLE_IP_WHITELIST = os.getenv('ENABLE_IP_WHITELIST', 'true').lower() == 'true'
