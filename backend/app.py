@@ -407,6 +407,26 @@ def proxy_image():
     )
 
 
+@app.route('/series/debug')
+def debug_series():
+    """Debug endpoint to inspect series cache"""
+    with SERIES_DATA_LOCK:
+        series_count = len(SERIES_DATA)
+        first_10 = SERIES_DATA[:10] if SERIES_DATA else []
+        last_10 = SERIES_DATA[-10:] if len(SERIES_DATA) >= 10 else []
+
+    return jsonify({
+        'total_series': series_count,
+        'last_refresh': last_series_refresh.isoformat() if last_series_refresh else None,
+        'first_10_series': first_10,
+        'last_10_series': last_10,
+        'alphabetical_check': {
+            'first_name': first_10[0]['name'] if first_10 else None,
+            'last_name': last_10[-1]['name'] if last_10 else None
+        }
+    })
+
+
 @app.route('/health')
 def health():
     """Health check endpoint"""
@@ -618,12 +638,21 @@ def search_series():
     with SERIES_DATA_LOCK:
         series_list = SERIES_DATA.copy()
 
+    logger.info(f"Series cache has {len(series_list)} series")
+
     if not series_list:
-        logger.warning("No series data available - returning empty results")
+        logger.error("No series data available - returning empty results")
         return jsonify([])
 
     # Return top 250 most popular series for xhrSelect dropdown
     results = series_list[:250]
+
+    logger.info(f"Returning {len(results)} series (top 250)")
+
+    # Log first and last series for debugging
+    if results:
+        logger.info(f"First series: {results[0]['name']}")
+        logger.info(f"Last series: {results[-1]['name']}")
 
     # Format for TRMNL xhrSelect
     # Expected format: [{ 'Display Name' => 'id' }]
@@ -642,6 +671,8 @@ def search_series():
             display_name: str(series['id'])
         })
 
+    logger.info(f"Formatted {len(formatted_results)} results for xhrSelect")
+    return jsonify(formatted_results)
     logger.info(f"Returning {len(formatted_results)} series for xhrSelect")
     return jsonify(formatted_results)
 
