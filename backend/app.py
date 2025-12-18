@@ -585,7 +585,6 @@ def health():
 
 
 @app.route('/series/search', methods=['POST', 'GET', 'OPTIONS'])
-@require_whitelisted_ip
 def search_series():
     """
     Search endpoint for TRMNL xhrSelectSearch field
