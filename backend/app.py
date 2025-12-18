@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file, jsonify, abort
+from flask_cors import CORS
 import requests
 from io import BytesIO
 from functools import lru_cache, wraps
@@ -16,6 +17,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# Enable CORS for TRMNL domain
+CORS(app, resources={
+    r"/series/*": {
+        "origins": ["https://usetrmnl.com", "https://www.usetrmnl.com"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": False
+    }
+})
 
 # Configuration
 ENABLE_IP_WHITELIST = os.getenv('ENABLE_IP_WHITELIST', 'true').lower() == 'true'
@@ -582,13 +593,19 @@ def health():
     return jsonify(health_data)
 
 
-@app.route('/series/search', methods=['POST', 'GET'])
+@app.route('/series/search', methods=['POST', 'GET', 'OPTIONS'])
 @require_whitelisted_ip
 def search_series():
     """
     Search endpoint for TRMNL xhrSelectSearch field
     Returns series matching search query
+
+    Expected response format: [{ 'Display Name' => 'value' }]
     """
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 204
+
     # Get query parameter
     if request.method == 'POST':
         query = request.json.get('query', '') if request.json else ''
@@ -597,10 +614,14 @@ def search_series():
 
     query = query.lower().strip() if query else ''
 
-    logger.info(f"Series search query: '{query}'")
+    logger.info(f"Series search query: '{query}' from IP: {get_client_ip()}")
 
     with SERIES_DATA_LOCK:
         series_list = SERIES_DATA.copy()
+
+    if not series_list:
+        logger.warning("No series data available - returning empty results")
+        return jsonify([])
 
     # If no query, return top 50 series
     if not query:
@@ -613,18 +634,20 @@ def search_series():
                   ][:50]  # Limit to 50 results
 
     # Format for TRMNL xhrSelectSearch
-    # Expected format: [{ 'name' => 'Display Name', 'id' => 'value' }]
+    # Expected format: [{ 'Display Name' => 'id' }]
     formatted_results = []
     for series in results:
-        display_name = f"{series['name']}"
+        # Build display name
+        display_name = series['name']
         if series.get('start_year'):
             display_name += f" ({series['start_year']})"
         if series.get('publisher_name'):
             display_name += f" - {series['publisher_name']}"
-        display_name += f" - {series.get('issue_count', 0)} issues"
+        display_name += f" [{series.get('issue_count', 0)} issues]"
 
+        # TRMNL expects: { 'Display Name': 'stored_value' }
         formatted_results.append({
-            series['name']: series['id']  # Key is display name, value is ID
+            display_name: str(series['id'])
         })
 
     logger.info(f"Returning {len(formatted_results)} series results")
