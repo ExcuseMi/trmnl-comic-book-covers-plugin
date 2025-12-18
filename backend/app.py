@@ -497,16 +497,17 @@ def get_random_comics():
     all_issues = []
 
     try:
-        # Fetch issues from each series
-        for series_id in series_ids[:count]:  # Limit to count series
-            # Randomize offset for variety
+        # Determine strategy based on series count
+        if len(series_ids) == 1:
+            # Single series: fetch multiple issues from that one series
+            series_id = series_ids[0]
             offset = rng.randint(0, 100)
 
             params = {
                 'api_key': COMIC_VINE_API_KEY,
                 'format': 'json',
                 'field_list': 'name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url',
-                'limit': 1,
+                'limit': count,  # Fetch all at once
                 'filter': f'volume:{series_id}',
                 'offset': offset,
                 'sort': 'cover_date'
@@ -518,7 +519,6 @@ def get_random_comics():
                 'Referer': 'https://comicvine.gamespot.com/'
             }
 
-            # Rate limit
             rate_limit_api_request()
 
             response = session.get(
@@ -531,23 +531,56 @@ def get_random_comics():
             data = response.json()
 
             if data.get('results'):
-                for issue in data['results']:
-                    # Rewrite image URLs to use our proxy
-                    if 'image' in issue and issue['image']:
-                        for key in ['small_url', 'medium_url', 'screen_url', 'original_url']:
-                            if key in issue['image'] and issue['image'][key]:
-                                original_url = issue['image'][key]
-                                if 'comicvine.gamespot.com' in original_url:
-                                    scheme = request.scheme
-                                    host = request.host
-                                    issue['image'][
-                                        key] = f"{scheme}://{host}/comic-book-covers/image?url={quote(original_url)}"
+                all_issues = data['results']
+        else:
+            # Multiple series: fetch 1 issue from each series (round-robin)
+            # If we need more issues than series, cycle through them
+            series_cycle = series_ids * ((count // len(series_ids)) + 1)
 
-                    all_issues.append(issue)
+            for i in range(count):
+                series_id = series_cycle[i]
+                offset = rng.randint(0, 100) + i  # Vary offset slightly
 
-        # If we have more issues than requested, randomly select
-        if len(all_issues) > count:
-            all_issues = rng.sample(all_issues, count)
+                params = {
+                    'api_key': COMIC_VINE_API_KEY,
+                    'format': 'json',
+                    'field_list': 'name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url',
+                    'limit': 1,
+                    'filter': f'volume:{series_id}',
+                    'offset': offset,
+                    'sort': 'cover_date'
+                }
+
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept': 'application/json',
+                    'Referer': 'https://comicvine.gamespot.com/'
+                }
+
+                rate_limit_api_request()
+
+                response = session.get(
+                    'https://comicvine.gamespot.com/api/issues/',
+                    params=params,
+                    headers=headers,
+                    timeout=10
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                if data.get('results'):
+                    all_issues.extend(data['results'])
+
+        # Rewrite all image URLs to use our proxy
+        for issue in all_issues:
+            if 'image' in issue and issue['image']:
+                for key in ['small_url', 'medium_url', 'screen_url', 'original_url']:
+                    if key in issue['image'] and issue['image'][key]:
+                        original_url = issue['image'][key]
+                        if 'comicvine.gamespot.com' in original_url:
+                            scheme = request.scheme
+                            host = request.host
+                            issue['image'][key] = f"{scheme}://{host}/comic-book-covers/image?url={quote(original_url)}"
 
         logger.info(f"Returning {len(all_issues)} random comics")
 
