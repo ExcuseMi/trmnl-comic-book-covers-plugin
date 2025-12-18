@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   comic-vine-proxy:
-    build: .
+    build: backend
     container_name: comic-vine-proxy
     ports:
       - "5006:5000"  # External:Internal
