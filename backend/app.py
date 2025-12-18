@@ -587,24 +587,16 @@ def health():
 @app.route('/series/search', methods=['POST', 'GET', 'OPTIONS'])
 def search_series():
     """
-    Search endpoint for TRMNL xhrSelectSearch field - NO IP WHITELIST
-    Returns series matching search query
+    Search endpoint for TRMNL xhrSelect field - NO IP WHITELIST
+    Returns series list
 
-    Expected response format: [{ "id": "value", "name": "Display Name" }]
+    Expected response format for xhrSelect: [{ 'Display Name' => 'value' }]
     """
     # Handle preflight OPTIONS request
     if request.method == 'OPTIONS':
         return '', 204
 
-    # Get query parameter
-    if request.method == 'POST':
-        query = request.json.get('query', '') if request.json else ''
-    else:
-        query = request.args.get('query', '')
-
-    query = query.lower().strip() if query else ''
-
-    logger.info(f"Series search query: '{query}' from IP: {get_client_ip()}")
+    logger.info(f"Series list request from IP: {get_client_ip()}")
 
     with SERIES_DATA_LOCK:
         series_list = SERIES_DATA.copy()
@@ -613,18 +605,11 @@ def search_series():
         logger.warning("No series data available - returning empty results")
         return jsonify([])
 
-    # If no query, return top 50 series
-    if not query:
-        results = series_list[:50]
-    else:
-        # Filter series by query (search in name and publisher)
-        results = [
-                      s for s in series_list
-                      if query in s['name'].lower() or query in s.get('publisher_name', '').lower()
-                  ][:50]  # Limit to 50 results
+    # Return top 250 most popular series for xhrSelect dropdown
+    results = series_list[:250]
 
-    # Format for TRMNL xhrSelectSearch
-    # Expected format from docs: [{ "id": "value", "name": "Display Name" }]
+    # Format for TRMNL xhrSelect
+    # Expected format: [{ 'Display Name' => 'id' }]
     formatted_results = []
     for series in results:
         # Build display name
@@ -635,13 +620,12 @@ def search_series():
             display_name += f" - {series['publisher_name']}"
         display_name += f" [{series.get('issue_count', 0)} issues]"
 
-        # TRMNL format: { "id": "stored_value", "name": "Display Name" }
+        # xhrSelect format: { 'Display Name': 'stored_value' }
         formatted_results.append({
-            "id": str(series['id']),
-            "name": display_name
+            display_name: str(series['id'])
         })
 
-    logger.info(f"Returning {len(formatted_results)} series results")
+    logger.info(f"Returning {len(formatted_results)} series for xhrSelect")
     return jsonify(formatted_results)
 
 
