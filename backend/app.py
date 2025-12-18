@@ -577,19 +577,27 @@ def get_random_comics():
                     'Referer': 'https://comicvine.gamespot.com/'
                 }
 
-                rate_limit_api_request()
+                try:
+                    rate_limit_api_request()
 
-                response = session.get(
-                    'https://comicvine.gamespot.com/api/issues/',
-                    params=params,
-                    headers=headers,
-                    timeout=10
-                )
-                response.raise_for_status()
-                data = response.json()
+                    response = session.get(
+                        'https://comicvine.gamespot.com/api/issues/',
+                        params=params,
+                        headers=headers,
+                        timeout=10
+                    )
+                    response.raise_for_status()
+                    data = response.json()
 
-                if data.get('results'):
-                    all_issues.extend(data['results'])
+                    if data.get('results'):
+                        all_issues.extend(data['results'])
+                        logger.debug(f"Fetched 1 issue from series {series_id} (offset {offset})")
+                    else:
+                        logger.warning(f"No results for series {series_id} at offset {offset}")
+                except Exception as e:
+                    logger.error(f"Error fetching from series {series_id}: {e}")
+                    # Continue to next series instead of failing completely
+                    continue
 
         # Rewrite all image URLs to use our proxy
         for issue in all_issues:
@@ -602,11 +610,16 @@ def get_random_comics():
                             host = request.host
                             issue['image'][key] = f"{scheme}://{host}/comic-book-covers/image?url={quote(original_url)}"
 
-        logger.info(f"Returning {len(all_issues)} random comics")
+        if len(all_issues) < count:
+            logger.warning(
+                f"Only found {len(all_issues)} comics, requested {count}. Some series may have returned no results.")
+
+        logger.info(f"Returning {len(all_issues)} random comics (requested: {count})")
 
         return jsonify({
             'success': True,
             'count': len(all_issues),
+            'requested_count': count,
             'series_ids': series_ids,
             'seed': seed,
             'results': all_issues
