@@ -29,12 +29,16 @@ def fetch_comic_vine_image(url):
         response.raise_for_status()
         logger.info(f"Successfully fetched image: {url} ({len(response.content)} bytes)")
         return response.content
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP error fetching {url}: {e.response.status_code} - {e.response.reason}")
+        return None
     except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to fetch {url}: {e}")
+        logger.error(f"Request failed for {url}: {type(e).__name__} - {str(e)}")
         return None
 
 
 @app.route('/image')
+@app.route('/comic-book-covers/image')
 def proxy_image():
     """Proxy Comic Vine images to avoid hotlinking protection"""
     url = request.args.get('url')
