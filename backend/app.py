@@ -355,8 +355,6 @@ def fetch_comic_vine_image(url, use_proxy=True):
 
 
 @app.route('/image')
-@app.route('/comic-book-covers/image')
-@require_whitelisted_ip
 def proxy_image():
     """Proxy Comic Vine images to avoid hotlinking protection"""
     url = request.args.get('url')
@@ -666,7 +664,6 @@ def get_random_comics():
 
 
 @app.route('/series/search', methods=['GET', 'POST', 'OPTIONS'])
-@app.route('/comic-book-covers/series/search', methods=['GET', 'POST', 'OPTIONS'])
 def search_series():
     """
     Search endpoint for TRMNL xhrSelect field - NO IP WHITELIST
