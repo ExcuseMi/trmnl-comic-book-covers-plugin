@@ -517,11 +517,36 @@ def get_random_comics():
     all_issues = []
 
     try:
+        # Get issue counts for each series to calculate safe offsets
+        series_info = {}
+        for series_id in series_ids:
+            # Find series in cache to get issue count
+            with SERIES_DATA_LOCK:
+                series_data = next((s for s in SERIES_DATA if str(s['id']) == str(series_id)), None)
+
+            if series_data:
+                series_info[series_id] = {
+                    'issue_count': series_data.get('issue_count', 100),
+                    'name': series_data.get('name', 'Unknown')
+                }
+                logger.debug(f"Series {series_id} ({series_data.get('name')}): {series_data.get('issue_count')} issues")
+            else:
+                # Default to 100 if not found in cache
+                series_info[series_id] = {'issue_count': 100, 'name': 'Unknown'}
+                logger.warning(f"Series {series_id} not found in cache, assuming 100 issues")
+
         # Determine strategy based on series count
         if len(series_ids) == 1:
             # Single series: fetch multiple issues from that one series
             series_id = series_ids[0]
-            offset = rng.randint(0, 100)
+            info = series_info[series_id]
+
+            # Calculate safe offset (leave room for 'count' issues)
+            max_safe_offset = max(0, info['issue_count'] - count)
+            offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
+
+            logger.info(
+                f"Single series {series_id} ({info['name']}): {info['issue_count']} issues, using offset {offset}")
 
             params = {
                 'api_key': COMIC_VINE_API_KEY,
@@ -559,7 +584,14 @@ def get_random_comics():
 
             for i in range(count):
                 series_id = series_cycle[i]
-                offset = rng.randint(0, 100) + i  # Vary offset slightly
+                info = series_info[series_id]
+
+                # Calculate safe offset based on issue count
+                max_safe_offset = max(0, info['issue_count'] - 1)
+                offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
+
+                logger.debug(
+                    f"Fetching from series {series_id} ({info['name']}): {info['issue_count']} issues, offset {offset}")
 
                 params = {
                     'api_key': COMIC_VINE_API_KEY,
