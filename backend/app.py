@@ -587,10 +587,10 @@ def health():
 @app.route('/series/search', methods=['POST', 'GET', 'OPTIONS'])
 def search_series():
     """
-    Search endpoint for TRMNL xhrSelectSearch field
+    Search endpoint for TRMNL xhrSelectSearch field - NO IP WHITELIST
     Returns series matching search query
 
-    Expected response format: [{ 'Display Name' => 'value' }]
+    Expected response format: [{ "id": "value", "name": "Display Name" }]
     """
     # Handle preflight OPTIONS request
     if request.method == 'OPTIONS':
@@ -624,7 +624,7 @@ def search_series():
                   ][:50]  # Limit to 50 results
 
     # Format for TRMNL xhrSelectSearch
-    # Expected format: [{ 'Display Name' => 'id' }]
+    # Expected format from docs: [{ "id": "value", "name": "Display Name" }]
     formatted_results = []
     for series in results:
         # Build display name
@@ -635,9 +635,10 @@ def search_series():
             display_name += f" - {series['publisher_name']}"
         display_name += f" [{series.get('issue_count', 0)} issues]"
 
-        # TRMNL expects: { 'Display Name': 'stored_value' }
+        # TRMNL format: { "id": "stored_value", "name": "Display Name" }
         formatted_results.append({
-            display_name: str(series['id'])
+            "id": str(series['id']),
+            "name": display_name
         })
 
     logger.info(f"Returning {len(formatted_results)} series results")
