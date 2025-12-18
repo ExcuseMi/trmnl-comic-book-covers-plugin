@@ -88,11 +88,7 @@ def create_comic_options_yml():
         'description':
             f"Display random comic book covers on your TRMNL e-ink device using the <strong><a href:'https://comicvine.gamespot.com/'>Comic Vine</a></strong> API.<br /><br />"
             f"<strong>Series-Based Approach:</strong><br />"
-            f"• Select from {len(sorted_series)} most popular comic series<br /><br />"
-            f"<strong>Setup:</strong><br />"
-            f"1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />"
-            f"2. Add your API key to the field below<br />"
-            f"3. Select your favorite series (required)<br /><br />",
+            f"• Select from {len(sorted_series)} most popular comic series<br /><br />",
         'learn_more_url': 'https://comicvine.gamespot.com/api/',
         'github_url': 'https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin',
         'category': 'comics,art'
@@ -101,18 +97,6 @@ def create_comic_options_yml():
     # Field definitions
     fields = [
         about_field,
-
-        # API Configuration
-        {
-            'keyname': 'comic_vine_api_key',
-            'field_type': 'password',
-            'name': 'Comic Vine API Key',
-            'description': 'Your Comic Vine API key. Get a free key at <a href="https://comicvine.gamespot.com/api/" target="_blank">comicvine.gamespot.com/api/</a>',
-            'placeholder': 'Enter your API key',
-            'optional': False
-        },
-
-
 
         # Series Selection (Primary Filter) - MANDATORY
         {
