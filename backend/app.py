@@ -94,10 +94,23 @@ def proxy_image():
     # Decode if URL encoded
     url = unquote(url)
 
-    # Security check - only allow Comic Vine images
-    if 'comicvine.gamespot.com' not in url:
-        logger.warning(f"Invalid URL domain: {url}")
-        abort(400, 'Invalid URL domain')
+    logger.info(f"Decoded image URL: {url}")
+
+    # Security check - prevent infinite loops by rejecting self-referencing URLs
+    if 'trmnl.bettens.dev' in url or request.host in url:
+        logger.error(f"Rejected self-referencing URL: {url}")
+        abort(400, 'Cannot proxy images from this server (infinite loop detected)')
+
+    # Security check - URL must be a valid Comic Vine image URL
+    # Check that it starts with Comic Vine domain (not just contains it in query params)
+    if not url.startswith('https://comicvine.gamespot.com/') and not url.startswith('http://comicvine.gamespot.com/'):
+        logger.warning(f"Invalid URL - must start with Comic Vine domain: {url}")
+        abort(400, 'Invalid URL - only Comic Vine images allowed')
+
+    # Additional validation - must be from their CDN path
+    if '/a/uploads/' not in url:
+        logger.warning(f"Invalid URL - not a Comic Vine image path: {url}")
+        abort(400, 'Invalid URL - must be a Comic Vine image')
 
     content = fetch_comic_vine_image(url)
 
@@ -121,7 +134,6 @@ def proxy_image():
 
 
 @app.route('/api/issues')
-@app.route('/comic-book-covers/api/issues')
 def proxy_issues():
     """
     Proxy Comic Vine API and rewrite image URLs to use our proxy
@@ -202,8 +214,16 @@ def proxy_issues():
                                 'icon_url', 'tiny_url', 'thumb_url', 'super_url']:
                         if key in comic['image'] and comic['image'][key]:
                             original = comic['image'][key]
-                            # Rewrite to use our proxy
-                            comic['image'][key] = f"{base_url}/image?url={quote(original)}"
+
+                            # Skip if already rewritten (contains our proxy URL)
+                            if base_url in original or 'trmnl.bettens.dev' in original:
+                                logger.debug(f"Skipping already proxied URL: {original}")
+                                continue
+
+                            # Only rewrite actual Comic Vine URLs
+                            if 'comicvine.gamespot.com' in original:
+                                # Rewrite to use our proxy with full path
+                                comic['image'][key] = f"{base_url}/comic-book-covers/image?url={quote(original)}"
 
             logger.info(f"Proxied {len(data['results'])} results with rewritten image URLs")
 
@@ -242,18 +262,6 @@ def health():
     return jsonify({'status': 'ok'})
 
 
-@app.route('/')
-def index():
-    """Root endpoint with usage info"""
-    return jsonify({
-        'service': 'Comic Vine Image Proxy',
-        'endpoints': {
-            '/comic-book-covers/api/issues': 'Proxy Comic Vine API with image URL rewriting',
-            '/image?url=<url>': 'Proxy individual Comic Vine images',
-            '/health': 'Health check'
-        },
-        'usage': 'Update your TRMNL plugin to use https://your-domain/comic-book-covers/api/issues instead of Comic Vine API directly'
-    })
 
 
 if __name__ == '__main__':
