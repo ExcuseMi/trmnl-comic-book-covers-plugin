@@ -3,7 +3,7 @@
 <!-- PLUGIN_STATS_START -->
 ## 🚀 TRMNL Plugin(s)
 
-*Last updated: 2026-01-02 06:35:58 UTC*
+*Last updated: 2026-01-03 06:33:21 UTC*
 
 
 ## <img src="assets/plugin-images/186430_icon.png" alt="Comic Book Covers icon" width="32"/> [Comic Book Covers](https://usetrmnl.com/recipes/186430)
