@@ -85,14 +85,14 @@ def create_comic_options_yml():
         'keyname': 'about',
         'name': 'About This Plugin',
         'field_type': 'author_bio',
+        'help_text': 'TRMNL X Ready',
         'description':
             f"Display random comic book covers on your TRMNL e-ink device using the <strong><a href:'https://comicvine.gamespot.com/'>Comic Vine</a></strong> API.<br /><br />"
             f"<strong>Series-Based Approach:</strong><br />"
             f"• Select from {len(sorted_series)} most popular comic series<br /><br />",
         'learn_more_url': 'https://comicvine.gamespot.com/api/',
         'github_url': 'https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin',
-        'category': 'comics,art',
-        'help_text': 'TRMNL X Ready'
+        'category': 'comics,art'
     }
 
     # Field definitions
