@@ -91,7 +91,8 @@ def create_comic_options_yml():
             f"• Select from {len(sorted_series)} most popular comic series<br /><br />",
         'learn_more_url': 'https://comicvine.gamespot.com/api/',
         'github_url': 'https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin',
-        'category': 'comics,art'
+        'category': 'comics,art',
+        'help_text': 'TRMNL X Ready'
     }
 
     # Field definitions
