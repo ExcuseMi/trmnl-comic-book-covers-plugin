@@ -15,7 +15,8 @@ custom_fields:
   description: Display random comic book covers on your TRMNL e-ink device using the <strong><a href:'https://comicvine.gamespot.com/'>Comic Vine</a></strong> API.<br /><br /><strong>Series-Based Approach:</strong><br />• Select from 250 most popular comic series<br /><br /><strong>Setup:</strong><br />1. Get a free API key from <a href='https://comicvine.gamespot.com/api/'>Comic Vine</a><br />2. Add your API key to the field below<br />3. Select your favorite series (required)<br /><br />
   learn_more_url: https://comicvine.gamespot.com/api/
   github_url: https://github.com/ExcuseMi/trmnl-comic-book-covers-plugin
-  category: comics,art
+  category: comics,art,
+  help_text: TRMNL X Ready
 - keyname: comic_vine_api_key
   field_type: password
   name: Comic Vine API Key
