@@ -207,3 +207,6 @@ marimo/_lsp/
 __marimo__/
 /.idea/misc.xml
 /.idea/modules.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/trmnl-comic-book-covers-plugin.iml
+.idea/vcs.xml

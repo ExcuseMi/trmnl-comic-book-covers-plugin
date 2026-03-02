@@ -8,27 +8,13 @@ assign show_background = trmnl.plugin_settings.custom_fields_values.show_backgro
 assign layout_orientation = display_style_parts[2]
 assign max_comics = display_style_parts[3] | plus: 0
 
-# Load comic data
-assign comics = "" | split: "" 
-
-# Loop over IDX_ variables until nothing is found
-for i in (0..5)
-assign idx_name = "IDX_" | append: i
-assign idx_data = [idx_name]
-
-if idx_data and idx_data.results
-assign comics = comics | concat: idx_data.results
-endif
-
-# Break early if we've reached the max_comics limit
-if comics.size >= max_comics
-break
-endif
-endfor
+if results 
+assign comics = results
 
 # Apply limit after concatenation to ensure we don't exceed max_comics
 assign comics = comics | limit: max_comics | sort: "cover_date"
 assign comics_count = comics.size
+endif
 %}
 <style>
   .full-width-label {
@@ -88,7 +74,6 @@ assign comics_count = comics.size
 {% else %}
 
 <div class="layout layout--stretch">
-
   {% if display_mode == "details" and comics_count > 0 %}
   {% comment %} Full Details Mode - Single Comic with Info Panel {% endcomment %}
   {% assign comic = comics[0] %}
