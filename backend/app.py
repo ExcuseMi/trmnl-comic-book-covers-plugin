@@ -718,8 +718,6 @@ def search_series():
 
     logger.info(f"Formatted {len(formatted_results)} results for xhrSelect")
     return jsonify(formatted_results)
-    logger.info(f"Returning {len(formatted_results)} series for xhrSelect")
-    return jsonify(formatted_results)
 
 
 @app.route('/')
