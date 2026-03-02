@@ -4,7 +4,7 @@ no_screen_padding: 'no'
 dark_mode: 'yes'
 static_data: ''
 polling_verb: get
-polling_url: "{% liquid\r\n  \r\n  assign display_style_parts = display_style | split: \"|\"\r\n  assign count = display_style_parts[3] | plus: 0\r\n  \r\n  assign selected_series = trmnl.plugin_settings.custom_fields_values.selected_series\r\n  \r\n\r\n  assign series_ids = selected_series | join: \",\"\r\n  \r\n\r\n  assign seed = trmnl.system.timestamp_utc | divided_by: 3600\r\n  \r\n  assign api_url = \"https://trmnl.bettens.dev/comic-book-covers/comics/random\"\r\n  assign api_url = api_url | append: \"?series_ids=\" | append: series_ids\r\n  assign api_url = api_url | append: \"&count=\" | append: count\r\n  assign api_url = api_url | append: \"&seed=\" | append: seed\r\n%}\r\n\r\n{{ api_url }}"
+polling_url: "{% liquid\n  assign selected_series = trmnl.plugin_settings.custom_fields_values.selected_series\n  assign series_ids = selected_series | join: \",\"\n  assign seed = trmnl.system.timestamp_utc | divided_by: 3600\n  assign api_url = \"https://trmnl.bettens.dev/comic-book-covers/comics/random\"\n  assign api_url = api_url | append: \"?series_ids=\" | append: series_ids\n  assign api_url = api_url | append: \"&count=10\"\n  assign api_url = api_url | append: \"&seed=\" | append: seed\n%}\n\n{{ api_url }}"
 polling_headers: ''
 polling_body: ''
 id: 186430
@@ -32,31 +32,5 @@ custom_fields:
   help_text: 'Use <kbd>⌘</kbd>+<kbd>click</kbd> or <kbd>Ctrl</kbd>+<kbd>click</kbd> to select multiple series. At least one series must be selected.
 
     '
-- keyname: display_style
-  name: Display Style
-  field_type: select
-  description: Choose how comic covers are displayed.
-  optional: false
-  options:
-  - Full Screen Covers Landscape: full|cover|landscape|3
-  - Full Screen Details Landscape: full|details|landscape|1
-  - Full Screen Cover Portrait: full|cover|portrait|1
-  - Half horizontal Cover Landscape: horizontal|cover|landscape|4
-  - Half horizontal Details Landscape: horizontal|details|landscape|1
-  - Half horizontal Cover Portrait: horizontal|cover|portrait|2
-  - Half vertical Cover Landscape: vertical|cover|landscape|1
-  - Half vertical Cover Portrait: vertical|cover|portrait|1
-  - Quadrant Covers Landscape: quadrant|cover|landscape|3
-  - Quadrant Details Landscape: quadrant|details|landscape|1
-  - Quadrant Covers Portrait: quadrant|cover|portrait|1
-- keyname: show_background
-  name: Show Background
-  field_type: select
-  description: Show a blurred comic cover as the background.
-  optional: false
-  default: 'yes'
-  options:
-  - 'No': 'no'
-  - 'Yes': 'yes'
 name: Comic Book Covers
 refresh_interval: 15

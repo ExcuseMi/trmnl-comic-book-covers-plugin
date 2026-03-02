@@ -25,7 +25,7 @@ IP_REFRESH_HOURS = int(os.getenv('IP_REFRESH_HOURS', '24'))
 COMIC_VINE_API_KEY = os.getenv('COMIC_VINE_API_KEY')
 
 # TRMNL API endpoint for IP addresses
-TRMNL_IPS_API = 'https://usetrmnl.com/api/ips'
+TRMNL_IPS_API = 'https://trmnl.com/api/ips'
 
 # Global variables for IP management
 TRMNL_IPS = set()
@@ -549,7 +549,7 @@ def get_random_comics():
             params = {
                 'api_key': COMIC_VINE_API_KEY,
                 'format': 'json',
-                'field_list': 'name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url',
+                'field_list': 'name,image,issue_number,volume',
                 'limit': count,  # Fetch all at once
                 'filter': f'volume:{series_id}',
                 'offset': offset,
@@ -594,7 +594,7 @@ def get_random_comics():
                 params = {
                     'api_key': COMIC_VINE_API_KEY,
                     'format': 'json',
-                    'field_list': 'name,image,cover_date,issue_number,volume,description,character_credits,team_credits,location_credits,concept_credits,person_credits,site_detail_url',
+                    'field_list': 'name,image,issue_number,volume',
                     'limit': 1,
                     'filter': f'volume:{series_id}',
                     'offset': offset,
