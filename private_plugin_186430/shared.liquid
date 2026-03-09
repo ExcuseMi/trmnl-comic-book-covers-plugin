@@ -34,8 +34,9 @@ assign p3 = data.portrait_items[idx3]
   .comic-col--stack .comic-inner { width:100%; max-height:100%; }
   .comic-col--stack .comic-inner img { width:100%; height:auto; flex:none; max-height:100%; object-fit:contain; }
 </style>
+{% if trmnl.plugin_settings.custom_fields_values.show_background == "true" and background_url != "" %}
 <img class="image-dither comic-bg" src="{{p0.url}}" />
-
+{% endif %}
 {% unless force_portrait %}
 <div class="layout layout--stretch layout--center comic-fg m--0 p--0 gap--medium {% unless force_landscape %}portrait:hidden{% endunless %}">
   <div class="comic-col"><div class="comic-inner"><img class="image image-dither" src="{{p0.url}}" /><div class="label lg:label--large label--inverted" data-clamp="1">{{p0.volume_name}} #{{p0.issue_number}}</div></div></div>
