@@ -4,6 +4,8 @@ no_screen_padding: 'no'
 dark_mode: 'yes'
 static_data: ''
 polling_verb: get
+framework_version: 2.3.7
+serverless_language: 
 polling_url: "{% liquid\r\n  assign selected_series = trmnl.plugin_settings.custom_fields_values.selected_series\r\n  assign seed = trmnl.system.timestamp_utc | divided_by: 3600\r\n  assign count = selected_series.size\r\n\r\n  comment\r\n    Strip legacy \"|weight\" suffix from each series entry\r\n  endcomment\r\n  assign clean_series = \"\"\r\n  for entry in selected_series\r\n    assign series_id = entry | split: \"|\" | first\r\n    assign clean_series = clean_series | append: series_id | append: \",\"\r\n  endfor\r\n  assign selected_series = clean_series | split: \",\" | compact\r\n\r\n  if count <= 5\r\n    assign series_ids = selected_series | join: \",\"\r\n  else\r\n    assign picked = \"\"\r\n    for i in (1..5)\r\n      assign offset = seed | times: i | modulo: count\r\n      assign picked_id = selected_series[offset]\r\n      assign picked = picked | append: picked_id | append: \",\"\r\n    endfor\r\n    assign series_ids = picked | split: \",\" | uniq | join: \",\"\r\n  endif\r\n\r\n  assign api_url = \"https://trmnl.bettens.dev/comic-book-covers/comics/random\"\r\n  assign api_url = api_url | append: \"?series_ids=\" | append: series_ids\r\n  assign api_url = api_url | append: \"&count=10\"\r\n  assign api_url = api_url | append: \"&seed=\" | append: seed\r\n%}\r\n{{ api_url }}"
 polling_headers: ''
 polling_body: ''
