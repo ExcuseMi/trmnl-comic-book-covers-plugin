@@ -37,6 +37,13 @@ SERIES_DATA = []
 SERIES_DATA_LOCK = threading.Lock()
 last_series_refresh = None
 
+# Cache for random comics results: keyed by (sorted_series_ids, count, seed)
+# Avoids repeated slow API chains for the same hourly seed
+COMICS_RESULT_CACHE = {}
+COMICS_RESULT_CACHE_LOCK = threading.Lock()
+COMICS_RESULT_CACHE_MAX = 500
+COMICS_RESULT_CACHE_TTL = 7200  # 2 hours
+
 # Always allow localhost
 LOCALHOST_IPS = ['127.0.0.1', '::1']
 
@@ -470,6 +477,24 @@ def health():
     return jsonify(health_data)
 
 
+def get_comics_cache(key):
+    """Return cached comics result or None if missing/expired."""
+    with COMICS_RESULT_CACHE_LOCK:
+        entry = COMICS_RESULT_CACHE.get(key)
+        if entry and time.time() - entry['ts'] < COMICS_RESULT_CACHE_TTL:
+            return entry['data']
+    return None
+
+
+def set_comics_cache(key, data):
+    """Store comics result in cache, evicting the oldest entry if full."""
+    with COMICS_RESULT_CACHE_LOCK:
+        if len(COMICS_RESULT_CACHE) >= COMICS_RESULT_CACHE_MAX:
+            oldest = min(COMICS_RESULT_CACHE, key=lambda k: COMICS_RESULT_CACHE[k]['ts'])
+            del COMICS_RESULT_CACHE[oldest]
+        COMICS_RESULT_CACHE[key] = {'data': data, 'ts': time.time()}
+
+
 @app.route('/comics/random', methods=['GET'])
 @require_whitelisted_ip
 def get_random_comics():
@@ -497,17 +522,25 @@ def get_random_comics():
 
     logger.info(f"Random comics request: series_ids={series_ids_str}, count={count}, seed={seed}")
 
-    if not series_ids_str:
-        return jsonify({
-            'error': 'Missing required parameter: series_ids',
-            'example': '/comics/random?series_ids=6306,2340&count=3'
-        }), 400
-
     # Parse series IDs
     series_ids = [sid.strip() for sid in series_ids_str.split(',') if sid.strip()]
 
     if not series_ids:
-        return jsonify({'error': 'No valid series IDs provided'}), 400
+        # No series configured — pick one at random from the cache
+        with SERIES_DATA_LOCK:
+            pool = SERIES_DATA[:250] if SERIES_DATA else []
+        if not pool:
+            return jsonify({'error': 'No series available'}), 503
+        fallback = random.Random(seed).choice(pool)
+        series_ids = [str(fallback['id'])]
+        logger.info(f"No series_ids provided, using random fallback: {fallback['name']} ({fallback['id']})")
+
+    # Check result cache — same seed+series+count = same response within the hour
+    cache_key = f"{','.join(sorted(series_ids))}:{count}:{seed}"
+    cached = get_comics_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for key {cache_key}")
+        return jsonify(cached)
 
     # Initialize random with seed for reproducibility
     rng = random.Random(seed)
@@ -576,35 +609,34 @@ def get_random_comics():
             if data.get('results'):
                 all_issues = data['results']
         else:
-            # Multiple series: fetch 1 issue from each series (round-robin)
-            # If we need more issues than series, cycle through them
-            series_cycle = series_ids * ((count // len(series_ids)) + 1)
+            # Multiple series: one API call per series, fetching several issues each.
+            # e.g. 5 series + count=10 → 2 issues per series = 5 calls instead of 10.
+            import math
+            issues_per_series = math.ceil(count / len(series_ids))
 
-            for i in range(count):
-                series_id = series_cycle[i]
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json',
+                'Referer': 'https://comicvine.gamespot.com/'
+            }
+
+            for series_id in series_ids:
                 info = series_info[series_id]
 
-                # Calculate safe offset based on issue count
-                max_safe_offset = max(0, info['issue_count'] - 1)
+                max_safe_offset = max(0, info['issue_count'] - issues_per_series)
                 offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
 
                 logger.debug(
-                    f"Fetching from series {series_id} ({info['name']}): {info['issue_count']} issues, offset {offset}")
+                    f"Fetching {issues_per_series} issues from series {series_id} ({info['name']}), offset {offset}")
 
                 params = {
                     'api_key': COMIC_VINE_API_KEY,
                     'format': 'json',
                     'field_list': 'name,image,issue_number,volume',
-                    'limit': 1,
+                    'limit': issues_per_series,
                     'filter': f'volume:{series_id}',
                     'offset': offset,
                     'sort': 'cover_date'
-                }
-
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': 'application/json',
-                    'Referer': 'https://comicvine.gamespot.com/'
                 }
 
                 try:
@@ -621,13 +653,15 @@ def get_random_comics():
 
                     if data.get('results'):
                         all_issues.extend(data['results'])
-                        logger.debug(f"Fetched 1 issue from series {series_id} (offset {offset})")
+                        logger.debug(f"Fetched {len(data['results'])} issues from series {series_id}")
                     else:
                         logger.warning(f"No results for series {series_id} at offset {offset}")
-                except Exception as e:
-                    logger.error(f"Error fetching from series {series_id}: {e}")
-                    # Continue to next series instead of failing completely
+                except Exception as exc:
+                    logger.error(f"Error fetching from series {series_id}: {exc}")
                     continue
+
+            # Trim to requested count (we may have fetched slightly more)
+            all_issues = all_issues[:count]
 
         # Rewrite all image URLs to use our proxy
         for issue in all_issues:
@@ -646,14 +680,20 @@ def get_random_comics():
 
         logger.info(f"Returning {len(all_issues)} random comics (requested: {count})")
 
-        return jsonify({
+        result = {
             'success': True,
             'count': len(all_issues),
             'requested_count': count,
             'series_ids': series_ids,
             'seed': seed,
             'results': all_issues
-        })
+        }
+
+        # Cache the result so subsequent same-seed requests return instantly
+        if all_issues:
+            set_comics_cache(cache_key, result)
+
+        return jsonify(result)
 
     except Exception as e:
         logger.error(f"Error fetching random comics: {e}")
