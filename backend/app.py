@@ -548,120 +548,56 @@ def get_random_comics():
     all_issues = []
 
     try:
-        # Get issue counts for each series to calculate safe offsets
-        series_info = {}
-        for series_id in series_ids:
-            # Find series in cache to get issue count
-            with SERIES_DATA_LOCK:
-                series_data = next((s for s in SERIES_DATA if str(s['id']) == str(series_id)), None)
+        # Pick one series at random from the user's selection
+        series_id = rng.choice(series_ids)
 
-            if series_data:
-                series_info[series_id] = {
-                    'issue_count': series_data.get('issue_count', 100),
-                    'name': series_data.get('name', 'Unknown')
-                }
-                logger.debug(f"Series {series_id} ({series_data.get('name')}): {series_data.get('issue_count')} issues")
-            else:
-                # Default to 100 if not found in cache
-                series_info[series_id] = {'issue_count': 100, 'name': 'Unknown'}
-                logger.warning(f"Series {series_id} not found in cache, assuming 100 issues")
+        # Look up issue count from cache
+        with SERIES_DATA_LOCK:
+            series_data = next((s for s in SERIES_DATA if str(s['id']) == str(series_id)), None)
 
-        # Determine strategy based on series count
-        if len(series_ids) == 1:
-            # Single series: fetch multiple issues from that one series
-            series_id = series_ids[0]
-            info = series_info[series_id]
-
-            # Calculate safe offset (leave room for 'count' issues)
-            max_safe_offset = max(0, info['issue_count'] - count)
-            offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
-
-            logger.info(
-                f"Single series {series_id} ({info['name']}): {info['issue_count']} issues, using offset {offset}")
-
-            params = {
-                'api_key': COMIC_VINE_API_KEY,
-                'format': 'json',
-                'field_list': 'name,image,issue_number,volume',
-                'limit': count,  # Fetch all at once
-                'filter': f'volume:{series_id}',
-                'offset': offset,
-                'sort': 'cover_date'
-            }
-
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/json',
-                'Referer': 'https://comicvine.gamespot.com/'
-            }
-
-            rate_limit_api_request()
-
-            response = session.get(
-                'https://comicvine.gamespot.com/api/issues/',
-                params=params,
-                headers=headers,
-                timeout=10
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            if data.get('results'):
-                all_issues = data['results']
+        if series_data:
+            issue_count = series_data.get('issue_count', 100)
+            series_name = series_data.get('name', 'Unknown')
         else:
-            # Multiple series: one API call per series, fetching several issues each.
-            # e.g. 5 series + count=10 → 2 issues per series = 5 calls instead of 10.
-            import math
-            issues_per_series = math.ceil(count / len(series_ids))
+            issue_count = 100
+            series_name = 'Unknown'
+            logger.warning(f"Series {series_id} not found in cache, assuming 100 issues")
 
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/json',
-                'Referer': 'https://comicvine.gamespot.com/'
-            }
+        # Calculate safe offset (leave room for 'count' issues)
+        max_safe_offset = max(0, issue_count - count)
+        offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
 
-            for series_id in series_ids:
-                info = series_info[series_id]
+        logger.info(f"Selected series {series_id} ({series_name}): {issue_count} issues, offset {offset}")
 
-                max_safe_offset = max(0, info['issue_count'] - issues_per_series)
-                offset = rng.randint(0, max_safe_offset) if max_safe_offset > 0 else 0
+        params = {
+            'api_key': COMIC_VINE_API_KEY,
+            'format': 'json',
+            'field_list': 'name,image,issue_number,volume',
+            'limit': count,
+            'filter': f'volume:{series_id}',
+            'offset': offset,
+            'sort': 'cover_date'
+        }
 
-                logger.debug(
-                    f"Fetching {issues_per_series} issues from series {series_id} ({info['name']}), offset {offset}")
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json',
+            'Referer': 'https://comicvine.gamespot.com/'
+        }
 
-                params = {
-                    'api_key': COMIC_VINE_API_KEY,
-                    'format': 'json',
-                    'field_list': 'name,image,issue_number,volume',
-                    'limit': issues_per_series,
-                    'filter': f'volume:{series_id}',
-                    'offset': offset,
-                    'sort': 'cover_date'
-                }
+        rate_limit_api_request()
 
-                try:
-                    rate_limit_api_request()
+        response = session.get(
+            'https://comicvine.gamespot.com/api/issues/',
+            params=params,
+            headers=headers,
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
 
-                    response = session.get(
-                        'https://comicvine.gamespot.com/api/issues/',
-                        params=params,
-                        headers=headers,
-                        timeout=10
-                    )
-                    response.raise_for_status()
-                    data = response.json()
-
-                    if data.get('results'):
-                        all_issues.extend(data['results'])
-                        logger.debug(f"Fetched {len(data['results'])} issues from series {series_id}")
-                    else:
-                        logger.warning(f"No results for series {series_id} at offset {offset}")
-                except Exception as exc:
-                    logger.error(f"Error fetching from series {series_id}: {exc}")
-                    continue
-
-            # Trim to requested count (we may have fetched slightly more)
-            all_issues = all_issues[:count]
+        if data.get('results'):
+            all_issues = data['results']
 
         # Rewrite all image URLs to use our proxy
         for issue in all_issues:
