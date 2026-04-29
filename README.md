@@ -3,12 +3,12 @@
 <!-- PLUGIN_STATS_START -->
 ## 🚀 TRMNL Plugin(s)
 
-*Last updated: 2026-04-28 08:26:46 UTC*
+*Last updated: 2026-04-29 08:21:16 UTC*
 
 
 ## <img src="assets/plugin-images/186430_icon.png" alt="Comic Book Covers icon" width="32"/> [Comic Book Covers](https://usetrmnl.com/recipes/186430)
 
-![Comic Book Covers screenshot](assets/plugin-images/186430_screenshot.png)
+![Comic Book Covers screenshot](assets/plugin-images/186430_screenshot.bmp)
 
 ### Description
 Display random comic book covers on your TRMNL e-ink device using the  <strong><a href="https://comicvine.gamespot.com/">Comic Vine</a></strong> API.<br /><br /> <strong>How it works:</strong><br /> • Select from 250 most popular comic series<br /> • Plugin displays random covers from your selected series<br /> • Images are proxied for optimal e-ink display<br />
