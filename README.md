@@ -3,7 +3,7 @@
 <!-- PLUGIN_STATS_START -->
 ## 🚀 TRMNL Plugin(s)
 
-*Last updated: 2026-06-10 10:02:51 UTC*
+*Last updated: 2026-06-11 10:26:58 UTC*
 
 
 ## <img src="assets/plugin-images/186430_icon.png" alt="Comic Book Covers icon" width="32"/> [Comic Book Covers](https://usetrmnl.com/recipes/186430)
@@ -19,7 +19,7 @@ Display random comic book covers on your TRMNL e-ink device using the  <strong><
 | Metric | Value |
 |--------|-------|
 | Installs | 2 |
-| Forks | 38 |
+| Forks | 39 |
 
 ---
 
