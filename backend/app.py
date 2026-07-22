@@ -530,7 +530,7 @@ def get_random_comics():
         with SERIES_DATA_LOCK:
             pool = SERIES_DATA[:250] if SERIES_DATA else []
         if not pool:
-            return jsonify({'error': 'No series available'}), 503
+            return jsonify({'error': 'No series available'})
         fallback = random.Random(seed).choice(pool)
         series_ids = [str(fallback['id'])]
         logger.info(f"No series_ids provided, using random fallback: {fallback['name']} ({fallback['id']})")
@@ -636,7 +636,7 @@ def get_random_comics():
         return jsonify({
             'error': str(e),
             'success': False
-        }), 500
+        })
 
 
 @app.route('/series/search', methods=['GET', 'POST', 'OPTIONS'])
